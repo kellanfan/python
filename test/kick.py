@@ -27,6 +27,7 @@ def kick():
             print 'oh!no!!!'
     else:
         print "please input 'right','centor','left'"
+    print "now the score is %d:%d"%(score[0],score[1])
 
     print '===You save!==='
     print ("please choice which onside you save: ")
@@ -46,7 +47,7 @@ def kick():
 for i in range(5):
     print '====Round %d===='%(i+1)
     kick()
-if score[0] == score[1]:
+while (score[0] == score[1]):
     i=i+1
     print '====add time Round %d'%(i+1)
     kick()
