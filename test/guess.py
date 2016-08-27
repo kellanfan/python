@@ -13,6 +13,8 @@ while guess != answer:	#bingo = False
 
     if answer > guess:
         print "too small"
-print "bingo,the num is %d" %answer
-print "you guess time id %d" %time
-print "the num is %d and you guess %d" %(answer,time)
+    if guess < 0:
+        print "Exit..."
+        break
+if answer == guess:
+    print "the num is %d and you guess time is %d" %(answer,time)
