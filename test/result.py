@@ -9,7 +9,10 @@ for line in lines:
     print data
     sum = 0
     for score in data[1:]:
-        sum += int(score)
+        point =int(score)
+        if point < 60:
+            continue
+        sum += point
     result = '%s\t%d\n' %(data[0],sum)
     scores.append(result)
 g = file('scores.txt','w')

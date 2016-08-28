@@ -4,6 +4,8 @@ print "what num i think you guess?"
 answer = randint(1,100)
 guess = 0
 time=0
+f = open('game.txt')
+score = f.read().split()
 while guess != answer:	#bingo = False
 			#while bingo == False:
     guess = input()
