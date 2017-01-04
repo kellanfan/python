@@ -1,6 +1,21 @@
 #!/usr/bin/python
 
-while True:
-    a = raw_input()
-    if a == 'EOF':
-        break
+#while True:
+#    a = raw_input()
+#    if a == 'EOF':
+#        break
+
+
+for letter in 'Python':     # First Example
+   if letter == 'h':
+      break
+   print 'Current Letter :', letter
+  
+var = 10                    # Second Example
+while var > 0:              
+   print 'Current variable value :', var
+   var = var -1
+   if var == 5:
+      break
+
+print "Good bye!"
