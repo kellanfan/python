@@ -18,13 +18,13 @@ if data[0] == 'l':
         cmd = "ls -l %s" %file
         os.system(cmd)
     else:
-        print "Error: %s is not exist!" %filen
+        print "Error: file %s is not exist!" %filen
 elif data[0] == 'd':
     dir = options.directory
     if os.path.isdir(dir):
         cmd = "ls -dl %s" %dir
         os.system(cmd)
     else:
-        print "Error: %s is not exist!" % options.directory
+        print "Error: directory %s is not exist!" % options.directory
 else:
     print "Error"
