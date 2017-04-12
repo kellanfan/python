@@ -3,6 +3,9 @@ import urllib2
 import urllib
 import re
 import os
+if not os.path.isdir('./image'):
+    os.mkdir('./image')
+
 def gethtml(url):
     page = urllib2.urlopen(url)
     html = page.read()
