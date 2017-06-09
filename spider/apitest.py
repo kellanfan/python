@@ -13,9 +13,9 @@ import base64, hmac
 from hashlib import sha256
 now = datetime.datetime.now()
 time = now.strftime('%Y-%m-%dT%H:%M:%SZ')
-secret_access_key = 'zUD7r8f1X8R28MHgKNOWUCm0NWD0WucyZv1H8aAg'
+secret_access_key = 'zUD7r8f1X8R2yZv1H8aAg'
 url = 'https://api.qingcloud.com/iaas/'
-data={'access_key_id':'JKEDNDMVPAFWGXFTEAXL',
+data={'access_key_id':'JKEDNDMVPA',
       'action':'DescribeInstances',
       'version':'1',
       'signature_method':'HmacSHA256',
