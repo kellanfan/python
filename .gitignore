@@ -1,2 +1,5 @@
 #忽略pyc结尾的调试文件
 *.pyc
+*.txt
+*.jpg
+*.png
