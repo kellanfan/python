@@ -35,5 +35,14 @@ def get_loadbalancer_status():
         result_dict['status'] = a['status']
         result.append(result_dict)
     return result
-status = get_loadbalancer_status()
+
+def get_instance_id():
+    ret = conn.describe_instances(status = ['running'])
+    instance_id = []
+    for instance in ret['instance_set']:
+        instance_id.append(instance['instance_id'])
+    return instance_id
+
+
+status = get_instance_id()
 print status
