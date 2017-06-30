@@ -36,13 +36,16 @@ def get_loadbalancer_status():
         result.append(result_dict)
     return result
 
-def get_instance_id():
+def get_instance():
     ret = conn.describe_instances(status = ['running'])
-    instance_id = []
+    instances_info = []
     for instance in ret['instance_set']:
-        instance_id.append(instance['instance_id'])
-    return instance_id
-
-
-status = get_instance_id()
-print status
+        instance_info = {} #每次循环要新建一个字典，如果在循环外，每次循环使用的是同一个字典，因为key值一样，导致value值被下次循环覆盖，所以最后的list的所有值都是最后一次循环的值
+        instance_info['instance_id'] = instance['instance_id']
+        instance_info['ip'] = instance['vxnets'][0]['private_ip']
+        instances_info.append(instance_info)
+    return instances_info
+if __name__ == "__main__":
+    infos = get_instance()
+    for i in infos:
+        print "the ip of %s is %s..." %(i['instance_id'], i['ip'])
