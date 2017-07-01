@@ -22,10 +22,10 @@ class Student(School):
         return self.__score
 
     def set_score(self, score):
-        if 0< score < 100:
-            self.__score = score
-        else:
-            raise ValueError('bad score')
+        if not isinstance(score, int):
+            raise ValueError('score must be int!')
+        if score < 0 or score > 100:
+            raise ValueError('score must between 0 and 100')
     def ps1(self):
         print "I\'m in %s , and my name is %s" %(self.sname, self.__name)
 
