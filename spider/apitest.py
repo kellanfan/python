@@ -23,13 +23,22 @@ data={'access_key_id':'JKEDNDMVPAFWGXFTEAXL',
       'time_stamp':time,
       'zone':'pek3a'
 }
+keys = sorted(data.keys())
+string_to_sign = 'GET\n/iaas/\n'
+pairs = []
+for key in keys:
+    val = data[key].encode('utf-8')
+    pairs.append(urllib.quote(key, safe='') + '=' +
+                urllib.quote(val, safe='-_~'))
+qs = '&'.join(pairs)
+string_to_sign += qs
 data = urllib.urlencode(data)
-string_to_sign = 'GET\n/iaas/\n%s' % data
-h = hmac.new(secret_access_key, digestmod=sha256)
+h = hmac.new(secret_access_key,digestmod=sha256)
 h.update(string_to_sign)
 sign = base64.b64encode(h.digest()).strip()
 signature = urllib.quote_plus(sign)
-url2 = url + '?' + data + '&' + 'signature=' + signature
+url2 = url + '?' + data + '&signature=' + signature
 response = urllib2.urlopen(url2)
 apicontent = response.read()
 print apicontent
+
