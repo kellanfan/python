@@ -13,7 +13,7 @@ import json
 conn = qingcloud.iaas.connect_to_zone(
         'pek3a',
         'JKEDNDMVPAFWGXFTEAXL',
-        'zUD7r8f1X8R28MHgKNOWUCm0NWD0WucyZv1H8aAg'
+        ''
         )
 
 def get_loadbalancer_id():
