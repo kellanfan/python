@@ -1,0 +1,1 @@
+from getcontent import getcontent
