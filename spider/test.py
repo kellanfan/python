@@ -8,7 +8,7 @@
 # Description:
 
 """
-import urllib2
+import urllib2, json
 from geturl import geturl
 from key import value
 
@@ -23,4 +23,5 @@ data={'action':'DescribeInstances',
 url =  geturl(data, zone, access_key_id, secret_access_key)
 response = urllib2.urlopen(url)
 apicontent = response.read()
-print apicontent
+content = json.loads(apicontent)
+print content
