@@ -1,1 +1,1 @@
-from getcontent import getcontent
+from getcontent import *
