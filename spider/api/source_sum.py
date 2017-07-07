@@ -1,13 +1,14 @@
 #!/usr/bin/python
 from getcontent import Describe_Bots
 import openpyxl, time
+import os
 zonelist = ['prod2', 'test', 'test2', 'tkwh']
 dt = time.strftime('%Y-%m-%d')
-wb = openpyxl.load_workbook('result.xlsx')
+
 def insertwb(ws,result):
     col = [2,4,5,6,7]
     i = 0
-    if result is not None:
+    if result:
         for c in col:
             for row in range(2, 5):
                 ws.cell(row=row, column=c).value = result[i]
@@ -16,7 +17,7 @@ def insertwb(ws,result):
 def cal_data(all_total_real_cpu, all_total_real_mem, all_total_real_disk, all_total_vcpu, all_total_vmem, all_total_vdisk, all_total_used_vcpu, all_total_used_vmem, all_total_used_vdisk):
     result = []
     if all_total_vcpu == 0 or all_total_vmem == 0 or all_total_vdisk == 0:
-        return None
+        return result
     else:
         all_total_real_mem = int(all_total_real_mem/1024)
         all_total_real_disk = int(all_total_real_disk/1024/1024)
@@ -30,31 +31,35 @@ def cal_data(all_total_real_cpu, all_total_real_mem, all_total_real_disk, all_to
         percent_vcpu = (float(all_total_used_vcpu)/float(all_total_vcpu))*100
         percent_vmem = (float(all_total_used_vmem)/float(all_total_vmem))*100
         percent_vdisk = (float(all_total_used_vdisk)/float(all_total_vdisk))*100
-        result.append(all_total_real_cpu)
-        result.append(all_total_real_mem)
-        result.append(all_total_real_disk)
-        result.append(all_total_vcpu)
-        result.append(all_total_vmem)
-        result.append(all_total_vdisk)
-        result.append(all_total_used_vcpu)
-        result.append(all_total_used_vmem)
-        result.append(all_total_used_vdisk)
-        result.append(all_total_free_vcpu)
-        result.append(all_total_free_vmem)
-        result.append(all_total_free_vdisk)
-        result.append(int(percent_vcpu))
-        result.append(int(percent_vmem))
-        result.append(int(percent_vdisk))
+        result.append(str(all_total_real_cpu) + 'C')
+        result.append(str(all_total_real_mem) + 'G')
+        result.append(str(all_total_real_disk) + 'T')
+        result.append(str(all_total_vcpu) + 'C')
+        result.append(str(all_total_vmem) + 'G')
+        result.append(str(all_total_vdisk) + 'T')
+        result.append(str(all_total_used_vcpu) + 'C')
+        result.append(str(all_total_used_vmem) + 'G')
+        result.append(str(all_total_used_vdisk) + 'T')
+        result.append(str(all_total_free_vcpu) + 'C')
+        result.append(str(all_total_free_vmem) + 'G')
+        result.append(str(all_total_free_vdisk) + 'T') 
+        result.append(str(int(percent_vcpu)) + 'C')
+        result.append(str(int(percent_vmem)) + 'G')
+        result.append(str(int(percent_vdisk)) + 'T')
         return result
 
 
 for zone in zonelist:
+    wb = openpyxl.load_workbook('result.xlsx')
     content = Describe_Bots(zone)
+    total_hyper = content['total_count']
+    sas_result = []
+    ssd_result = []
+    sata_result = []
     hyper_sas = []
     hyper_ssd = []
     hyper_sata = []
     hyper_other = []
-    total_hyper =  content['total_count']
     all_total_sas_vcpu = 0
     all_total_ssd_vcpu = 0
     all_total_sata_vcpu = 0
@@ -84,11 +89,7 @@ for zone in zonelist:
     all_total_real_sata_disk = 0
     for hypernode in content['bot_set']:
         host_machine = hypernode['host_machine']
-        
-        if zone == 'test':
-            place_group_ids = hypernode['place_groups'][0]['place_group_id']
-        else:
-            place_group_ids = hypernode['place_group_ids'][0]
+        place_group_ids = hypernode['place_groups'][0]['place_group_id']
     
         if place_group_ids == 'plg-00000000':
             hyper_sas.append(host_machine)
@@ -135,11 +136,12 @@ for zone in zonelist:
         else:
             hyper_other.append(host_machine)
 
+
     lenth_sas = len(hyper_sas)
     lenth_ssd = len(hyper_ssd)
     lenth_sata = len(hyper_sata)
     lenth_other = len(hyper_other)
-    
+
     print "zone: %s\ntotal: %d, sas: %d, ssd: %d, sata: %d, other: %d" %(zone, total_hyper, lenth_sas, lenth_ssd, lenth_sata, lenth_other)
 
     sas_result =  cal_data(all_total_real_sas_cpu, all_total_real_sas_mem,all_total_real_sas_disk, all_total_sas_vcpu, all_total_sas_vmem, all_total_sas_vdisk, all_total_used_sas_vcpu, all_total_used_sas_vmem, all_total_used_sas_vdisk)
@@ -153,3 +155,7 @@ for zone in zonelist:
     insertwb(ws2, ssd_result)
     insertwb(ws3, sata_result)
     wb.save('result' + '-' +  zone + '-' + dt + '.xlsx')
+cmd = 'tar czf result-%s.tgz result-*.xlsx' % dt
+rm_cmd = 'rm -rf result-*.xlsx'
+os.system(cmd)
+os.system(rm_cmd)
