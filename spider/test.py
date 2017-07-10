@@ -19,6 +19,7 @@ data={'action':'DescribeInstances',
       'version':'1',
       'signature_method':'HmacSHA256',
       'signature_version':'1',
+      'status': 'running'
      }
 url =  geturl(data, zone, access_key_id, secret_access_key)
 response = urllib2.urlopen(url)
