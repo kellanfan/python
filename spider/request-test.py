@@ -9,7 +9,7 @@
 
 """
 
-import requests
+import requests, json
 from bs4 import BeautifulSoup
 
 url = raw_input("input your url: ")
