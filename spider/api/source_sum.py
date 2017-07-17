@@ -6,10 +6,10 @@ zonelist = ['prod2', 'test', 'test2', 'tkwh']
 dt = time.strftime('%Y-%m-%d')
 
 def insertwb(ws,result):
-    col = [2,3,4,5,6,7]
+    #col = [2,3,4,5,6,7]
     i = 0
     if result:
-        for c in col:
+        for c in range(2, 8):
             for row in range(2, 5):
                 ws.cell(row=row, column=c).value = result[i]
                 i += 1
@@ -110,7 +110,8 @@ for zone in zonelist:
         host_machine = hypernode['host_machine']
         status = hypernode['status']
         place_group_ids = hypernode['place_groups'][0]['place_group_id']
-        if not (status == 'active' or status == 'standby'):
+        #if not (status == 'active' or status == 'standby'):
+        if status not in ['active','standby']:
             print "\033[0;31m%s status is %s!!! Maybe broken, please check!!! \033[0m" %(host_machine, status)
             continue
         
