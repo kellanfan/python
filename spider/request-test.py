@@ -10,7 +10,7 @@
 """
 
 import requests, json
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 
 url = raw_input("input your url: ")
 if 'http' not in url:
@@ -22,11 +22,12 @@ headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 }
 req = requests.get(url, headers=headers)
-soup = BeautifulSoup(req.text, "html5lib")
-print soup.title
-print "===================================="
-print soup.head
-print "===================================="
-print soup.a
-print "===================================="
-print soup.p
+print req.text
+#soup = BeautifulSoup(req.text, "html5lib")
+#print soup.title
+#print "===================================="
+#print soup.head
+#print "===================================="
+#print soup.a
+#print "===================================="
+#print soup.p
