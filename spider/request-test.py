@@ -12,7 +12,8 @@
 import requests, json
 #from bs4 import BeautifulSoup
 
-url = raw_input("input your url: ")
+#url = raw_input("input your url: ")
+url = 'http://python.org'
 if 'http' not in url:
     url = 'http://' + url
 headers = {
@@ -22,12 +23,14 @@ headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 }
 req = requests.get(url, headers=headers)
-print req.text
-#soup = BeautifulSoup(req.text, "html5lib")
-#print soup.title
-#print "===================================="
-#print soup.head
-#print "===================================="
-#print soup.a
-#print "===================================="
-#print soup.p
+print req.status_code
+if 'Python' in req.content:
+    print "hahahaha"
+print "======================"
+pload = dict(aa='11', bb='22')
+req1 = requests.post("http://httpbin.org/post", data=pload)
+print req1.text
+
+
+print "======================"
+
