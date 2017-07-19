@@ -21,7 +21,7 @@ def getcode(url):
     }
     req = urllib2.Request(url, headers = header)
     code = urllib2.urlopen(req).getcode()
-    print '[\033[1;35m%s\033[0m] is ok, process is [\033[1;35m%s\033[0m]' %(url, os.getpid())
+    print '[\033[1;32m%s\033[0m] is ok, process is [\033[1;35m%s\033[0m]' %(url, os.getpid())
 
 print 'Parent process %s.' % os.getpid()
 for url in urllist:
