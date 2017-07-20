@@ -24,7 +24,7 @@ def getcode(url):
     print '[\033[1;35m%s\033[0m] is ok, process is [\033[1;35m%s\033[0m]' %(url, os.getpid())
 
 print 'Parent process %s.' % os.getpid()
-l = len(urllist)
+l = len(urllist) + 1
 p = Pool(l)
 for url in urllist:
     p.apply_async(getcode, args=(url,))
