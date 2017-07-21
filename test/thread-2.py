@@ -8,8 +8,9 @@
 # Description:
 
 """
-import threading, time
-
+import threading
+from time import ctime
+import urllib2
 urllist = ['http://www.jianshu.com/u/347ae48e48e3', 'https://stackedit.io/', 'http://man.chinaunix.net/develop/rfc/RFC4.txt', 'http://dockone.io/', 'http://theme-next.iissnan.com/']
 def getcode(url):
     header = {
@@ -23,7 +24,13 @@ def getcode(url):
     code = urllib2.urlopen(req).getcode()
     print '[\033[1;35m%s\033[0m] is ok... and thread %s ' % (url, threading.current_thread().name)
 
+threads = []
 for url in urllist:
-    
-
-
+    tt = threading.Thread(target=getcode, args=(url,))
+    threads.append(tt)
+if __name__ == '__main__':
+    for t in threads:
+#        t.setDaemon(True)
+        t.start()
+    t.join()
+    print "%s Done..." %ctime()

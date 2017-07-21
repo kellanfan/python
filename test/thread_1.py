@@ -19,7 +19,6 @@ t1 = threading.Thread(target=music, args=(u'东风破',))
 t2 = threading.Thread(target=movie, args=(u'七里香',))
 threads.append(t1)
 threads.append(t2)
-
 if __name__ == '__main__':
     for t in threads:
         t.setDaemon(True)
