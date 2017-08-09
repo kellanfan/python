@@ -23,17 +23,29 @@ def save_data(db):
         with open('db.json', 'w') as f:
             l.append(db)
             json.dump(l, f)
-            f.write('\n')
     except IOError:
         print "save data failed..."
     finally:
         f.close()
 
 def read_data():
-    with open('db.json', 'r') as f:
-        content = json.load(f)
-    f.close()
-    return content
+    try:
+        with open('db.json', 'r') as f:
+            content = json.load(f)
+        f.close()
+        return content
+    except:
+        content = []
+        return content
+
+def get_user_list():
+    datalist = read_data()
+    had_usernamelist = []
+    for data in datalist:
+        had_username = data.keys()
+        had_usernamelist.append(had_username)
+    return had_usernamelist
+
 
 def register(username, password):
     print "Welcome to my system, please register~~~"
@@ -55,15 +67,18 @@ def calc_md5(string):
 
 def login(username, password):
     print "welcome to my system! Please login..."
-    datalist = read_data()
-    for data in datalist:
-        had_usernamelist = []
-        had_username = data.keys()
-        had_usernamelist.append(had_username)
-    if username in had_username:
+    had_username = get_user_list()
+    data = read_data()
+    users_dict = {}
+    for users_dic in data:
+        users_dict = dict(users_dict, **users_dic)
+    userNameList = []
+    for user in had_username:
+        userNameList.append(user[0])
+    if username in userNameList:
         md5_pass = calc_md5(username + password + 'kellan-salt')
         for i in range(5):
-            if data[username] == md5_pass:
+            if users_dict[username] == md5_pass:
                 print "login successful! have fun!!!"
                 break
             else:
