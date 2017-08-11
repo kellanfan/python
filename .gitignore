@@ -6,3 +6,5 @@
 *.json
 *.bmp
 key.py
+*.log
+
