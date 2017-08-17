@@ -20,7 +20,7 @@ def input_info():
 def save_data(db):
     try:
         l = read_data()
-        with open('db.json', 'w') as f:
+        with open('login-and-register.json', 'w') as f:
             l.append(db)
             json.dump(l, f)
     except IOError:
@@ -30,7 +30,7 @@ def save_data(db):
 
 def read_data():
     try:
-        with open('db.json', 'r') as f:
+        with open('login-and-register.json', 'r') as f:
             content = json.load(f)
         f.close()
         return content
@@ -77,18 +77,22 @@ def login(username, password):
         userNameList.append(user[0])
     if username in userNameList:
         md5_pass = calc_md5(username + password + 'kellan-salt')
+        flag = 0
         for i in range(5):
             if users_dict[username] == md5_pass:
                 print "login successful! have fun!!!"
+                flag =1
                 break
-            else:
-                print "Password is ERROR!!! Please try again!"
-                continue
+        if flag == 0:
+            print "Password is ERROR!!! Please try again!"
     else:
         print "NOT has the user, please register!!!"
 
 
 if __name__ == '__main__':
+    print "="*30
+    print "  用户登录与注册V0.1"
+    print "="*30
     choose = raw_input("Please choose login[0] or register[1]: ")
     if choose == 'login' or choose == '0':
         (username, password) = input_info()
