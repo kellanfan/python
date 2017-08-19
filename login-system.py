@@ -48,7 +48,6 @@ def get_user_list():
 
 
 def register(username, password):
-    print "Welcome to my system, please register~~~"
     check_password = raw_input("please input your password again to ensure it. Your password: ")
     while True:
         if password != check_password:
@@ -66,7 +65,6 @@ def calc_md5(string):
     return md5.hexdigest()
 
 def login(username, password):
-    print "welcome to my system! Please login..."
     had_username = get_user_list()
     data = read_data()
     users_dict = {}
@@ -75,28 +73,38 @@ def login(username, password):
     userNameList = []
     for user in had_username:
         userNameList.append(user[0])
+
     if username in userNameList:
         md5_pass = calc_md5(username + password + 'kellan-salt')
-        flag = 0
-        for i in range(5):
-            if users_dict[username] == md5_pass:
-                print "login successful! have fun!!!"
-                flag =1
-                break
-        if flag == 0:
-            print "Password is ERROR!!! Please try again!"
+        if users_dict[username] == md5_pass:
+            return 0
+        else:
+            return 1
     else:
-        print "NOT has the user, please register!!!"
+        return 2
 
 
 if __name__ == '__main__':
     print "="*30
     print "  用户登录与注册V0.1"
     print "="*30
+    print "welcome to my system!"
     choose = raw_input("Please choose login[0] or register[1]: ")
     if choose == 'login' or choose == '0':
         (username, password) = input_info()
-        login(username, password)
+        i = 0
+        for i < 5:
+            flag = login(username, password)
+            if flag == 0:
+                print "login successful! have fun!!!"
+                break
+            elif flag == 1:
+                print "Password is ERROR!!! Please try again!"
+
+            elif flag == 2:
+                print "NOT has the user, please register!!!"
+                
+                
     elif choose == 'register' or choose == '1':
         (username, password) = input_info()
         register(username, password)
