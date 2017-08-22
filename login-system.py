@@ -76,15 +76,10 @@ def login(username, password):
 
     if username in userNameList:
         md5_pass = calc_md5(username + password + 'kellan-salt')
-<<<<<<< HEAD
-<<<<<<< HEAD
         if users_dict[username] == md5_pass:
             return 0
         else:
             return 1
-=======
-=======
->>>>>>> parent of f7b94a8... 修复密码登录错误出现3次登录失败信息
         for i in range(5):
             if users_dict[username] == md5_pass:
                 print "login successful! have fun!!!"
@@ -92,25 +87,15 @@ def login(username, password):
             else:
                 print "Password is ERROR!!! Please try again!"
                 continue
-<<<<<<< HEAD
->>>>>>> parent of f7b94a8... 修复密码登录错误出现3次登录失败信息
-=======
->>>>>>> parent of f7b94a8... 修复密码登录错误出现3次登录失败信息
     else:
         return 2
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-<<<<<<< HEAD
     print "="*30
     print "  用户登录与注册V0.1"
     print "="*30
     print "welcome to my system!"
-=======
->>>>>>> parent of f7b94a8... 修复密码登录错误出现3次登录失败信息
-=======
->>>>>>> parent of f7b94a8... 修复密码登录错误出现3次登录失败信息
     choose = raw_input("Please choose login[0] or register[1]: ")
     if choose == 'login' or choose == '0':
         (username, password) = input_info()
