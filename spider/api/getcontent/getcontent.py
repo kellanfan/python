@@ -1,5 +1,7 @@
 #!/usr/bin/python
-
+'''
+use DescribeBots api to get hyper infomations
+'''
 import urllib2, json
 from geturl import geturl
 from key import value
@@ -12,13 +14,16 @@ header = {
 }
 secret_access_key = value.get('secret_access_key')
 access_key_id = value.get('access_key_id')
-def Describe_Bots(zone):
+def Describe_Bots(zone,offset):
     data = { 
          'action':'DescribeBots',
          'version':'1',
+         'limit':'100',
+         'offset':offset,
          'signature_method':'HmacSHA256',
          'signature_version':'1',
     }
+
     url = geturl(data, zone, access_key_id, secret_access_key)
     req = urllib2.Request(url, headers = header)
     response = urllib2.urlopen(req)

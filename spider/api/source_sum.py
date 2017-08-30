@@ -4,9 +4,7 @@ import openpyxl, time
 import os
 zonelist = ['prod2', 'test', 'test2', 'tkwh']
 dt = time.strftime('%Y-%m-%d')
-
 def insertwb(ws,result):
-    #col = [2,3,4,5,6,7]
     i = 0
     if result:
         for c in range(2, 8):
@@ -60,9 +58,17 @@ def cal_data(all_total_real_cpu, all_total_real_mem, all_total_real_disk,
 
 
 for zone in zonelist:
+    content = {}
+    content1 = {}
+    total_hyper = 0
     wb = openpyxl.load_workbook('result.xlsx')
-    content = Describe_Bots(zone)
+    content = Describe_Bots(zone, '0')
     total_hyper = content['total_count']
+    if total_hyper > 100:
+        content1 = Describe_Bots(zone, '100')
+        content_botset = content1['bot_set'] + content['bot_set']
+    else:
+        content_botset = content['bot_set']
     sas_result = []
     ssd_result = []
     sata_result = []
@@ -106,17 +112,18 @@ for zone in zonelist:
     all_total_per_sata_cpu = 0
     all_total_per_sata_mem = 0
     all_total_per_sata_disk = 0
-    for hypernode in content['bot_set']:
+    for hypernode in content_botset:
         host_machine = hypernode['host_machine']
         status = hypernode['status']
         place_group_ids = hypernode['place_groups'][0]['place_group_id']
         #if not (status == 'active' or status == 'standby'):
-        if status not in ['active','standby']:
+        if status not in ['active', 'standby']:
             print "\033[0;31m%s status is %s!!! Maybe broken, please check!!! \033[0m" %(host_machine, status)
             continue
         
         total_real_cpu = hypernode['total_vcpu']/5
         total_disk = hypernode['used_disk'] + hypernode['free_disk']
+        total_vdisk = total_disk * 2
         per_real_cpu = 100 - hypernode['cpu_idle']
         per_real_mem = int((1 - float(hypernode['real_free_memory'])/ float(hypernode['real_total_memory']))*100)
         per_real_disk = int((float(hypernode['used_disk']) / float(total_disk))*100)
@@ -128,7 +135,7 @@ for zone in zonelist:
             all_total_real_sas_disk += total_disk
             all_total_sas_vcpu += hypernode['total_vcpu']
             all_total_sas_vmem += hypernode['total_memory']
-            all_total_sas_vdisk += total_disk
+            all_total_sas_vdisk += total_vdisk
             all_total_used_sas_vcpu += hypernode['used_vcpu']
             all_total_used_sas_vmem += hypernode['used_memory']
             all_total_used_sas_vdisk += hypernode['virtual_disk']
@@ -142,7 +149,7 @@ for zone in zonelist:
             all_total_real_ssd_disk += total_disk
             all_total_ssd_vcpu += hypernode['total_vcpu']
             all_total_ssd_vmem += hypernode['total_memory']
-            all_total_ssd_vdisk += total_disk
+            all_total_ssd_vdisk += total_vdisk
             all_total_used_ssd_vcpu += hypernode['used_vcpu']
             all_total_used_ssd_vmem += hypernode['used_memory']
             all_total_used_ssd_vdisk += hypernode['virtual_disk']
@@ -156,7 +163,7 @@ for zone in zonelist:
             all_total_real_sata_disk += total_disk
             all_total_sata_vcpu += hypernode['total_vcpu']
             all_total_sata_vmem += hypernode['total_memory']
-            all_total_sata_vdisk += total_disk
+            all_total_sata_vdisk += total_vdisk
             all_total_used_sata_vcpu += hypernode['used_vcpu']
             all_total_used_sata_vmem += hypernode['used_memory']
             all_total_used_sata_vdisk += hypernode['virtual_disk']
@@ -172,7 +179,8 @@ for zone in zonelist:
     lenth_sata = len(hyper_sata)
     lenth_other = len(hyper_other)
 
-    print "\033[0;32m zone: %s\ntotal: %d, sas: %d, ssd: %d, sata: %d, other: %d \033[0m" %(zone, total_hyper, lenth_sas, lenth_ssd, lenth_sata, lenth_other)
+    print "\033[0;32mzone: %s\ntotal: %d, sas: %d, ssd: %d, sata: %d, other: %d \033[0m" %(zone, total_hyper, lenth_sas, lenth_ssd, lenth_sata, lenth_other)
+    print "==================="
 
     sas_result = cal_data(all_total_real_sas_cpu, all_total_real_sas_mem, all_total_real_sas_disk,
                           all_total_per_sas_cpu, all_total_per_sas_mem, all_total_per_sas_disk,
@@ -190,9 +198,9 @@ for zone in zonelist:
                            all_total_sata_vcpu, all_total_sata_vmem, all_total_sata_vdisk,
                            all_total_used_sata_vcpu, all_total_used_sata_vmem, all_total_used_sata_vdisk)
     
-    ws1 = wb['Sheet1']
-    ws2 = wb['Sheet2']
-    ws3 = wb['Sheet3']
+    ws1 = wb['SAS']
+    ws2 = wb['SSD']
+    ws3 = wb['SATA']
     insertwb(ws1, sas_result)
     insertwb(ws2, ssd_result)
     insertwb(ws3, sata_result)

@@ -6,7 +6,7 @@ from hashlib import sha256
 from key import value
 
 def geturl(data, zone, access_key_id, secret_access_key):
-    url = 'http://10.130.11.6:8882/iaas/'
+    url = 'http://api.taikangcloud.com:8882/iaas/'
     now = datetime.datetime.now()
     time = now.strftime('%Y-%m-%dT%H:%M:%SZ')
     data['time_stamp'] = time
