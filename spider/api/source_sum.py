@@ -4,11 +4,11 @@ import openpyxl, time
 import os
 zonelist = ['prod2', 'test', 'test2', 'tkwh']
 dt = time.strftime('%Y-%m-%d')
-def insertwb(ws,result):
+def insertwb(ws,result,j):
     i = 0
     if result:
         for c in range(2, 8):
-            for row in range(2, 5):
+            for row in range(j, j+3):
                 ws.cell(row=row, column=c).value = result[i]
                 i += 1
 
@@ -57,11 +57,11 @@ def cal_data(all_total_real_cpu, all_total_real_mem, all_total_real_disk,
         return result
 
 
+wb = openpyxl.load_workbook('result.xlsx')
 for zone in zonelist:
     content = {}
     content1 = {}
     total_hyper = 0
-    wb = openpyxl.load_workbook('result.xlsx')
     content = Describe_Bots(zone, '0')
     total_hyper = content['total_count']
     if total_hyper > 100:
@@ -197,15 +197,19 @@ for zone in zonelist:
                            lenth_sata,
                            all_total_sata_vcpu, all_total_sata_vmem, all_total_sata_vdisk,
                            all_total_used_sata_vcpu, all_total_used_sata_vmem, all_total_used_sata_vdisk)
-    
-    ws1 = wb['SAS']
-    ws2 = wb['SSD']
-    ws3 = wb['SATA']
-    insertwb(ws1, sas_result)
-    insertwb(ws2, ssd_result)
-    insertwb(ws3, sata_result)
-    wb.save('result' + '-' +  zone + '-' + dt + '.xlsx')
-cmd = 'tar czf result-%s.tgz result-*.xlsx' % dt
-rm_cmd = 'rm -rf result-*.xlsx'
-os.system(cmd)
-os.system(rm_cmd)
+    ws1 = wb['prod']
+    ws2 = wb['test']
+    if zone == 'prod2':
+        insertwb(ws1, sas_result, 3)
+        insertwb(ws1, ssd_result, 9)
+        insertwb(ws1, sata_result, 15)
+    elif zone == 'test':
+        insertwb(ws2, sas_result, 4)
+        insertwb(ws2, ssd_result, 10)
+    elif zone == 'test2':
+        insertwb(ws2, sas_result, 18)
+wb.save('result' + '-' + dt + '.xlsx')
+#cmd = 'tar czf result-%s.tgz result-*.xlsx' % dt
+#rm_cmd = 'rm -rf result-*.xlsx'
+#os.system(cmd)
+#os.system(rm_cmd)
