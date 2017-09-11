@@ -11,10 +11,10 @@
 
 
 def sum_nums(a,b,*args):
-    num1 = 0
+    num1 = a + b
     for num in args:
         num1 += num
-    return a + b + num1
+    return num1
 
 def print_num(a,b,*args):
     print a
