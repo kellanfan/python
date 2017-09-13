@@ -23,3 +23,15 @@ suma(11,22)
 func = lambda a,b:a+b
 #自带retuen
 print func(11,22)
+
+
+
+#匿名函数的应用
+infors = [{"name":"kellan","age":23},{"name":"haha","age":21},{"name":"zhao","age":22}]
+
+#对上面的列表进行排序，由于元素是字典没办法进行排序，所以只能找出一个key进行排序，这就可以使用到
+
+#按name这个key进行排序，就是把整个字典元素当做参数，返回值是这个字典中指定key的value
+
+infors.sort(key=lambda x:x['name'])
+print infors
