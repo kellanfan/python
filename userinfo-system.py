@@ -10,18 +10,22 @@
 """
 import time
 import sys
+def print_menu():
+    '''
+    打印提示信息
+    '''
+    print "="*30
+    print "    用户信息管理系统V0.1"
+    print "="*30
+    print "    1 添加用户信息"
+    print "    2 修改用户信息"
+    print "    3 查询用户信息"
+    print "    4 删除用户信息"
+    print "    5 显示用户信息"
+    print "    6 退出系统"
+    print "="*30
 
-#打印提示信息
-print "="*30
-print "    用户信息管理系统V0.1"
-print "="*30
-print "    1 添加用户信息"
-print "    2 修改用户信息"
-print "    3 查询用户信息"
-print "    4 删除用户信息"
-print "    5 显示用户信息"
-print "    6 退出系统"
-print "="*30
+print_menu()
 
 user_info_list = []
 while True:
