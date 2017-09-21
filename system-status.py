@@ -4,7 +4,7 @@
 # Author: kellanfan
 # Created Time : Thu 14 Sep 2017 10:54:42 PM CST
 
-# File Name: system-moniter.py
+# File Name: system-status.py
 # Description: 利用psutil模块实现系统监控，分析和限制系统资源及进程的管理。监控有个dstat命令，是使用python编写，可以使用，并且看下源码。这个脚本就只是显示相关信息就可以了
 """
 
