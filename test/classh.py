@@ -9,8 +9,8 @@ class School(object):
 
 class Student(School):
 
-    def __init__(self, sname, name, score):
-        self.__name = name
+    def __init__(self, sname, name, score): #私有方法，同样不能直接调用
+        self.__name = name #加双下划线表示私有属性，在外面不能直接调用，只能对象内调用
         self.__score = score
         School.__init__(self,sname)
     def print_score(self):
