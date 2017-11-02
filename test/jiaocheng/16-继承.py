@@ -18,8 +18,9 @@ class Cat(Animal): #括号里写的就是父类，继承父类的方法 子类�
     def catch(self):
         print "---抓老鼠---"
 
-aa = Animal()
-aa.eat()
-tom = Cat()
-tom.eat()
-tom.catch()
+class Lanmao(Cat):
+    def eat(self): #多层继承，重写：继承的方法不太适合子类，可以重写，重新定义
+        print "---狂吃---"
+
+lan = Lanmao()
+lan.eat()
