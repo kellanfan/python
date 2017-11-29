@@ -18,6 +18,8 @@ os.rmdir("aa")
 #from os import mkdir,rmdir
 #mkdir("aa") 不用写模块名了
 
+#__all__ = ["a", "b"] 这个变量定义了list中的函数或类才能配其他程序导入，这样可以避免使用from xx import *时，把一些不需要或者不想让其导入的函数导入进去。
+
 def main():  #基本结构
     pass
 
