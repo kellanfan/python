@@ -14,6 +14,8 @@ def getreq(url):
 def gethtml(url):
     page = urllib2.urlopen(url)
     html = page.read()
+    with open('html', 'w') as f:
+        f.write(html)
     return html
 
 url = raw_input("your url: ")
