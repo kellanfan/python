@@ -18,3 +18,23 @@ import copy
 c = cpoy.deepcopy(a) #把地址中的内容复制一份，另存一个内存地址
 print id(c)
 
+#更深层次的深拷贝
+a = [1,2,3]
+b = [4,5,6]
+c = [a,b]
+d = c #浅拷贝
+e = copy.deepcopy(c) #深拷贝，会把指向的内容也拷贝
+a.append(4)
+id(c)
+id(e)
+
+
+a = [1,2,3]
+b = [4,5,6]
+c = [a,b]
+e = copy.copy(c) #拷贝，只把引用拷贝了
+a.append(4)
+id(c)
+id(e)
+
+
