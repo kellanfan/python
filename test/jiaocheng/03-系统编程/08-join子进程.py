@@ -20,6 +20,6 @@ def test():
 
 p = Process(target=test)
 p.start()
-p.join(1)#堵塞
+p.join()#堵塞,如果无参数，那么就是等所有子进程都结束，主进程才会结束
 # 是否等待进程实例执行结束，或等待多少秒，join中的1是timeout值
 print("----main----")
