@@ -17,12 +17,12 @@ g_num = 0
 def test1():
     global g_num
     #这个线程和test2的线程会抢着上锁，如果有1方成功上锁，那么另一方会堵塞（一直等待）到这个锁被解开为止
-    mutex.acquire() #获取锁，上锁
+#    mutex.acquire() #获取锁，上锁
     for i in range(1000000):
         mutex.acquire() #获取锁，上锁
         g_num += 1
         mutex.release() #解锁，解锁后，其他堵塞中的线程会进行上锁
-    mutex.release() #解锁，解锁后，其他堵塞中的线程会进行上锁
+#    mutex.release() #解锁，解锁后，其他堵塞中的线程会进行上锁
     print("---in test1 g_num is %d---"%g_num)
 
 def test2():

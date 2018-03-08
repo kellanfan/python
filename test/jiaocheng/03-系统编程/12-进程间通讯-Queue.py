@@ -35,7 +35,7 @@ def main():
     pr.start()
     pr.join()
     print('\n所有数据读写完成')
-    read(q)
+#    read(q)
 
 if __name__ == '__main__':
     main()
