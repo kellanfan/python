@@ -12,7 +12,6 @@
 from socket import *
 from multiprocessing import Process
 import time
-import re
 
 #创建socket
 server_socket = socket(AF_INET, SOCK_STREAM)
@@ -22,10 +21,14 @@ server_socket.listen(10)
 def clientdeal(client_socket, client_info):
     client_data = client_socket.recv(2048).decode('utf-8')
     datalist = client_data.split()
-    print("%s----request_action: %s, request_path: %s, Http_version: %s"
-            %(str(client_info),datalist[0],datalist[1],datalist[2]))
-    recv_data = 'HTTP1.1 200 OK\r\n\r\nFankai is The best one!!!'
-    client_socket.send(recv_data.encode('utf-8'))
+    day = time.ctime()
+    print("%s###%s----request_action: %s, request_path: %s, Http_version: %s"
+            %(day,str(client_info),datalist[0],datalist[1],datalist[2]))
+    response_start_line = 'HTTP1.1 200 OK\r\n'
+    response_headers = 'Server: Kellan server'
+    response_body  = 'Fankai is The best one!!!'
+    response = response_start_line + response_headers + '\r\n' + response_body
+    client_socket.send(bytes(response, 'utf-8'))
     client_socket.close()
     
 def main():

@@ -12,32 +12,42 @@
 from socket import *
 from multiprocessing import Process
 import time
-import re
+import os
 
-#创建socket
-server_socket = socket(AF_INET, SOCK_STREAM)
-server_socket.bind(("",8899))
-server_socket.listen(10)
 
 def clientdeal(client_socket, client_info):
     client_data = client_socket.recv(2048).decode('utf-8')
     datalist = client_data.split()
-    print("%s----request_action: %s, request_path: %s, Http_version: %s"
-            %(str(client_info),datalist[0],datalist[1],datalist[2]))
+    print("%s %s request_action: %s, request_file: %s, Http_version: %s"
+            %(time.ctime(),str(client_info), datalist[0],datalist[1],datalist[2]))
+    request_file = datalist[1]
+    ROOT_DIR = os.getcwd()
+    if request_file == '/':
+        file_name = ROOT_DIR + '/index.html'
+    else:
+        file_name = ROOT_DIR + request_file
+    print(file_name)
     try:
-        f = open('index.html')
-        recv_data = 'HTTP1.1 200 OK\r\n\r\n' + f.read()
+        f = open(file_name)
+        recv_data = 'HTTP1.1 200 OK\r\nServer: My server\r\n' + f.read()
+        f.close()
     except:
-        recv_data = 'HTTP1.1 404 Not Found\r\n\r\nNot Found!!!'
+        recv_data = 'HTTP1.1 404 Not Found\r\nServer: My server\r\nNot Found!!!\n'
     finally:
-        client_socket.send(recv_data.encode('utf-8'))
+        client_socket.send(bytes(recv_data, 'utf-8'))
         client_socket.close()
     
 def main():
+    #创建socket
+    server_socket = socket(AF_INET, SOCK_STREAM)
+    #server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind(("",8899))
+    server_socket.listen(128)
     while True:
         client_socket, client_info = server_socket.accept()
         p = Process(target=clientdeal, args=(client_socket, client_info))
         p.start()
+        client_socket.close() #在主进程中将新创建的socket关闭，否则客户端访问的话会一直卡住
     p.close()
     server_socket.close()
 
