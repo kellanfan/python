@@ -11,7 +11,9 @@
 from socket import *
 from multiprocessing import Process
 import time
-import os, sys
+import os
+import sys
+import re
 
 ROOT_DIR = os.getcwd()
 WSGI_PYTHON_DIR = './wsgi'
@@ -47,11 +49,14 @@ class HTTPserver(object):
 
     def clientdeal(self, client_socket, client_info):
         client_data = client_socket.recv(2048).decode('utf-8')
-        datalist = client_data.split()
-        print("%s %s request_action: %s, request_file: %s, Http_version: %s"
-                            %(time.ctime(),str(client_info), datalist[0],datalist[1],datalist[2]))
+        datalist = client_data.splitlines()
+        request_start_line = datalist[0]
+        request_file = re.match(r"\w+ +(/[^ ]*) ", request_start_line).group(1)
+        method = re.match(r"(\w+) +/[^ ]* ", request_start_line).group(1)
+
+        print("%s %s request_action: %s, request_file: %s"
+                            %(time.ctime(),str(client_info), method, request_file))
         
-        request_file = datalist[1]
         #判断，如果没有写具体文件，那么直接返回index.html内容
 
         if request_file.endswith('.py'):
