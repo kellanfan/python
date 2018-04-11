@@ -28,6 +28,8 @@ def clientdeal(client_socket, client_info):
         file_name = ROOT_DIR + request_file
     print(file_name)
     try:
+#这里需要注意一点，具体是怎么读取，r还是rb，因为linux，unix，mac换行符都是\n，但是windows是\r\n，
+#在window系统中，当二进制写入时，需要二进制读取，否则会自动将\n转为\r\n
         f = open(file_name)
         recv_data = 'HTTP1.1 200 OK\r\nServer: My server\r\n' + f.read()
         f.close()
