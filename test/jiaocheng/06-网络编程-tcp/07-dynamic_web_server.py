@@ -60,12 +60,15 @@ class HTTPserver(object):
         #判断，如果没有写具体文件，那么直接返回index.html内容
 
         if request_file.endswith('.py'):
+            env = {
+                'PATH_INFO': request_file
+                'METHOD': method
+            } #这个应该是上面接收到数据带的参数，目前先传个空
             try:
                 mod = __import__(request_file[1:-3]) #截取脚本名
             except:
                 recv_data = 'HTTP1.1 404 Not Found\r\nServer: My server\r\nNot Found!!!\n'
             else:
-                env = {} #这个应该是上面接收到的请求头做处理，目前先传个空
                 response_body = mod.application(env, self.start_response)
                 recv_data = self.response_headers + '\r\n' + response_body
         else:
