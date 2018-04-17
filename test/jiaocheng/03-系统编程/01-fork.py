@@ -15,9 +15,11 @@ try:
     ret = os.fork()
     print(ret) #父进程中fork的返回值，就是刚刚创建出来的子进程的pid
     if ret == 0:
-        while True:
+        i = 0
+        while i < 10:
             print("curr pid is %d and ppid is %d" %(os.getpid(),os.getppid()))
             time.sleep(1)
+            i += 1
     else:
         while True:
             print("curr pid is %d and ppid is %d" %(os.getpid(),os.getppid()))
