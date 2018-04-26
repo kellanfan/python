@@ -11,7 +11,7 @@
 import requests
 import re
 import os
-
+import time
 
 def open_url(url):  
     headers = {
@@ -32,16 +32,21 @@ def save_text(url_id, link_list):
         f.write(link + '\n')
     f.close()
     
-#构建url
-url_header = 'http://www.meijutt.com/content/meiju'
-url_end = '.html'
-reg = re.compile(r'<a href="(ed2k://\|file\|.+?)">') #加？非贪婪
-if not os.path.exists('./meiju'):
-    os.mkdir('./meiju')
+def main():
+    #构建url
+    url_header = 'http://www.meijutt.com/content/meiju'
+    url_end = '.html'
+    reg = re.compile(r'<a href="(ed2k://\|file\|.+?)">') #加？非贪婪
+    if not os.path.exists('./meiju'):
+        os.mkdir('./meiju')
 
-for url_id in range(10000, 50000):
-    url = url_header + str(url_id)  + url_end
-    status, html = open_url(url)
-    if status == 200:
-        link_list = re.findall(reg, html)
-        save_text(url_id, link_list)
+    for url_id in range(20000, 50000):
+        url = url_header + str(url_id)  + url_end
+        status, html = open_url(url)
+        if status == 200:
+            link_list = re.findall(reg, html)
+            save_text(url_id, link_list)
+        time.sleep(0.5)
+
+if __name__ == '__main__':
+    main()
