@@ -50,3 +50,8 @@ timer5 = Timer("t5", "from __main__ import t5")
 print("extend: %s" %timer5.timeit(1000))
 timer6 = Timer("t6", "from __main__ import t6")
 print("list: %s" %timer6.timeit(1000))
+
+
+#说明
+#python的list采用分离式动态顺序表，而且存储数据部分存储的只是具体数据的地址，实际的数据是存储在别的地方
+#扩容时加4倍，达到阈值50000的之后，加1倍
