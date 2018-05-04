@@ -22,5 +22,6 @@ def open_url(url):
     #response.encoding = 'gb2312'
     return response.status_code, response.text
 
-url = 'http://www.runningman-fan.com/180429-zz.html'
-print(open_url(url))
+if __name__ == '__main__':
+    url = 'http://www.runningman-fan.com/180429-zz.html'
+    print(open_url(url))
