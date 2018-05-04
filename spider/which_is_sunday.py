@@ -11,18 +11,18 @@
 import datetime
 def sunday():
     week_list = []
-    year = 17
+    year = 18
     for month in range(1,12):
         for day in range(1,31):
             try:
-                week = datetime.date.weekday(datetime.date(year,month,day))
-            except:
+                week = datetime.date.weekday(datetime.date(year,int(month),int(day)))
+            except ValueError:
                 week = 7
             if week == 6:
-                if month < 10:
+                if int(month) < 10 and not str(month).startswith('0'):
                     month = '0' + str(month)
-                if day < 10:
-                    day = '0' + str(day)
+                if int(day) < 10 and not str(day).startswith('0'):
+                    day =  '0' + str(day)
                 week_date = str(year) + str(month) + str(day)
                 week_list.append(week_date)
     
@@ -30,4 +30,4 @@ def sunday():
 
 
 if __name__ == '__main__':
-    sunday()
+    print(sunday())

@@ -41,7 +41,7 @@ def main():
         #构建请求
         req = getreq(url)
         #正则匹配
-        html_reg = re.compile(r'<a href="(http://pan.baidu.com/s/\w*)')
+        html_reg = re.compile(r'<a href="(https://pan.baidu.com/s/\w*)')
         pass_reg = re.compile(r'密码：(\w*)')
         #获取数据
         html = gethtml(req)
