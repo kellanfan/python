@@ -41,7 +41,7 @@ def main():
     if not os.path.exists('/root/data/meiju'):
         os.mkdir('/root/data/meiju')
 
-    for url_id in range(20000, 40000):
+    for url_id in range(20000, 23600):
         url = url_header + str(url_id)  + url_end
         ourl = OpenUrl(url, 'gb2312')
         status, html = ourl.openurl()

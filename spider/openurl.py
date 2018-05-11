@@ -8,7 +8,7 @@
 # Description:
 
 """
-
+import sys
 import requests
 
 class OpenUrl(object):
@@ -35,6 +35,14 @@ class OpenUrl(object):
             return status_code, text
 
 if __name__ == '__main__':
-    url = 'http://www.meijutt.com/content/meiju23030.html'
-    ourl = OpenUrl(url,'gb2312')
+    url = input("请输入url：")
+    encode = input("请输入编码格式<utf-8(default)/gb2312...>: ")
+    if encode == '':
+        ourl = OpenUrl(url)
+    else:
+        if encode in ['gb2312', 'gbk']:
+            ourl = OpenUrl(url, encode)
+        else:
+            print("傻逼么？不是告诉你了么？！")
+            sys.exit(1)
     print(ourl.openurl())
