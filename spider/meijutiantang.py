@@ -14,6 +14,15 @@ import time
 import logging
 from openurl import OpenUrl
 
+def logger(code, msg):
+    '''记录日志'''
+    logging.basicConfig(filename='/root/data/meiju/meiju.log',level=logging.INFO,format='%(asctime)s %(levelname)s: %(message)s')
+    if code == 200:
+        message = 'get data from [%s] successful!!!' %msg
+        logging.info(message)
+    else:
+        message = 'get data from [%s] failed!!!' %msg
+        logging.error(message)
 
 def save_text(url_id, title, link_list):
     file_name = '/root/data/meiju/%s.txt'%url_id
@@ -32,14 +41,19 @@ def main():
     if not os.path.exists('/root/data/meiju'):
         os.mkdir('/root/data/meiju')
 
-    for url_id in range(10000, 40000):
+    for url_id in range(20000, 40000):
         url = url_header + str(url_id)  + url_end
         ourl = OpenUrl(url, 'gb2312')
         status, html = ourl.openurl()
+        logger(status, url)
         if status == 200:
             link_list = re.findall(text_reg, html)
-            name = re.search('<title>(.+?)迅雷下载',html).group(1)
-            save_text(url_id, name, link_list)
+            try:
+                name = re.search('<title>(.+?)迅雷下载',html).group(1)
+            except:
+                name = None
+            else:
+                save_text(url_id, name, link_list)
         time.sleep(0.5)
 
 if __name__ == '__main__':
