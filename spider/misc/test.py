@@ -8,21 +8,13 @@
 # Description:
 
 """
-import urllib2, json
-from geturl import geturl
-from key import value
 
-secret_access_key = value.get('secret_access_key')
-access_key_id = value.get('access_key_id')
-zone = 'pek3a'
-data={'action':'DescribeInstances',
-      'version':'1',
-      'signature_method':'HmacSHA256',
-      'signature_version':'1',
-      'status': 'running'
-     }
-url =  geturl(data, zone, access_key_id, secret_access_key)
-response = urllib2.urlopen(url)
-apicontent = response.read()
-content = json.loads(apicontent)
-print content
+import re
+from openurl import OpenUrl
+url = 'https://www.piaohua.com/html/kehuan/2012/0329/24007.html'
+ourl = OpenUrl(url)
+code, content = ourl.openurl()
+reg = re.compile(r'<a href="(ftp:.+?)">')
+if code == 200:
+    l = re.findall(reg, content)
+    print(l)
