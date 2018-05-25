@@ -4,7 +4,7 @@
 import urllib2
 import re
 import time
-import which_is_sunday
+from misc import which_is_sunday
 
 def getreq(url):
     '''构建请求'''

@@ -10,3 +10,4 @@ key.py
 *.log
 *.data
 *.html
+*.yaml
