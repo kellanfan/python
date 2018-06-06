@@ -9,9 +9,8 @@
 
 """
 import datetime
-def sunday():
+def sunday(year):
     week_list = []
-    year = 18
     for month in range(1,12):
         for day in range(1,31):
             try:
@@ -30,4 +29,4 @@ def sunday():
 
 
 if __name__ == '__main__':
-    print(sunday())
+    print(sunday(17))
