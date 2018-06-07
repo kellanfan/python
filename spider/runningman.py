@@ -14,7 +14,7 @@ def send_mysql(part, info):
     if code == 0:
         print('%s ok'%part)
     else:
-        print('%s error'%part)
+        print('%s error,message: %s'%(part,code))
 
 
 def main():
@@ -39,7 +39,7 @@ def main():
                 if pw != 'body' and pw != '':
                     password = [pw]
             html = re.findall(html_reg, html)
-            print(part,html,password)
+            #print(part,html,password)
             info = tuple(html + password)
             if len(info) == 2:
                 send_mysql(part, info)

@@ -40,7 +40,7 @@ def send_mysql(name, str_down):
     if code == 0:
         print('%s ok'%name)
     else:
-        print('%s error'%name)
+        print('%s error, message: %s'%(name,code))
 
 def main():
     #构建url
