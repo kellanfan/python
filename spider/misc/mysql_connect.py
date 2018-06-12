@@ -24,39 +24,42 @@ class MysqlConnect(object):
         f.close()
         return configs
 
-    def getconfig(self):
-        return self.__host
+    def open(self,basename):
+        #可以把数据库名basename放在实例属性中，既可以当做参数，也可以写到yaml配置文件中,这个无所谓，因为现在所有
+        #代码都是用一个yaml文件，暂时就先放在这设置就好。
+        self.db = pymysql.connect(self.__host,self.__user,self.__password, basename, use_unicode=True, charset="utf8")
+        self.cursor = self.db.cursor()
+
+    def close(self):
+        self.cursor.close()
+        self.db.close()
 
     def change_data(self, basename, sql):
-        db = pymysql.connect(self.__host,self.__user,self.__password, basename, use_unicode=True, charset="utf8")
-        cursor = db.cursor()
         try:
-            cursor.execute(sql)
-            db.commit()
+            self.open(basename)
+            self.cursor.execute(sql)
+            self.db.commit()
             return 0
         except Exception as e:
-            db.rollback()
+            self.db.rollback()
             return e
         finally:
-            cursor.close()
-            db.close()
+            self.close()
 
     def select_data(self, basename, sql):
-        db = pymysql.connect(self.__host,self.__user,self.__password, basename, use_unicode=True, charset="utf8")
-        cursor = db.cursor()
         try:
-            cursor.execute(sql)
-        except:
-            db.rollback()
+            self.open(basename)
+            self.cursor.execute(sql)
+        except Exception as e:
+            return e
         else:
-            return cursor.fetchall()
+            return self.cursor.fetchall()
         finally:
-            cursor.close()
-            db.close()
+            self.close()
 
 if __name__ == '__main__':
     a = MysqlConnect('mysql_data.yaml')
-    in_sql = "update student set birthday = '1990-09-08' where name = 'hello'"
+    in_sql = "insert into students(name,birthday) value ('haha', '1978-09-23')"
     sql = 'select * from students'
     b = a.change_data('test',in_sql)
     print(b)
