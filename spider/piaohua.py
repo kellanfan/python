@@ -8,6 +8,8 @@
 # Description: 爬取飘花网的电影资源
 
 """
+
+import re
 import time
 #发现re确实不好处理一些特殊的html，改动bs4
 from bs4 import BeautifulSoup
@@ -80,5 +82,5 @@ def send_mysql(name, str_down, ftype):
 
 if __name__ == '__main__':
     ftype = input("需要下载的类型:\n<dongzuo,xiju,aiqing,kehuan,juqing,xuannian,wenyi,zhanzheng,kongbu,zainan,lianxuju,dongman>\n:")
-    get_url()
+    #get_url()
     get_download_url('url_list.txt',ftype)
