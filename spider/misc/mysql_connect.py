@@ -59,8 +59,8 @@ class MysqlConnect(object):
 
 if __name__ == '__main__':
     a = MysqlConnect('mysql_data.yaml')
-    in_sql = "insert into students(name,birthday) value ('haha', '1978-09-23')"
-    sql = 'select * from students'
-    b = a.change_data('test',in_sql)
-    print(b)
-    print(a.select_data('test',sql))
+    #in_sql = "insert into students(name,birthday) value ('haha', '1978-09-23')"
+    sql = "select password from user where name = 'fankai'"
+    #b = a.change_data('test',in_sql)
+    #print(b)
+    print(len(a.select_data('test',sql)))

@@ -64,6 +64,7 @@ def get_download_url(file,ftype):
                 if 'ftp' in url:
                     url = ''.join(url.split())
                     list_down.append(url)
+                    print(list_down)
             #构建最后的str
             if list_down != []:
                 str_down = '#'.join(list_down)
