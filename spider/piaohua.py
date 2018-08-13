@@ -11,35 +11,46 @@
 
 import re
 import time
+import sys
 #发现re确实不好处理一些特殊的html，改动bs4
 from bs4 import BeautifulSoup
 from misc import mysql_connect
 from misc import openurl
 
-def get_url():
+def get_url(ftype):
     '''对于这种临时数据暂时存到文件中'''
-    main_url = 'https://www.piaohua.com/html/%s/index.html' 
+    main_url = 'https://www.piaohua.com/html/%s/index.html' %ftype
     ourl = openurl.OpenUrl(main_url)
     code,main_content = ourl.openurl()
-    pages = re.search("共 <strong>(\d+)</strong>页", main_content).group(1)
-    reg = re.compile(r'<a href="(/html/lianxuju/.+?)"')
-    f = open('url_list.txt','w')
+    #pages = re.search("共 <strong>(\d+)</strong>页", main_content).group(1)
+    if code ==  200:
+        soup = BeautifulSoup(main_content)
+        pages = soup.strong.string
+    else:
+        print("bad url: %s" %main_url)
+        sys.exit(-1)
+    #reg = re.compile(r'<a href="(/html/lianxuju/.+?)"')
+    fname = 'url_list_' + ftype +'.txt'
+    f = open(fname,'w')
     for page in range(1,int(pages)):
-        list_url = 'https://www.piaohua.com/html/lianxuju/list_%d.html' %page
+        list_url = 'https://www.piaohua.com/html/%s/list_%d.html' %(ftype, page)
         sub_ourl = openurl.OpenUrl(list_url)
         sub_code,sub_content = sub_ourl.openurl()
         if sub_code == 200:
-            ll = re.findall(reg, sub_content)
-            print(ll)
-            for l in list(set(ll)):
-                f.write(l+'\n')
+            #ll = re.findall(reg, sub_content)
+            sub_soup = BeautifulSoup(sub_content)
+            for link in sub_soup.select('a[class=img]'):
+                sub_url = link.get('href')
+                if sub_url.startswith('/html/'+ftype ):
+                    f.write(sub_url+'\n')
         time.sleep(0.5)
     f.close()
+    return f
 
 def get_download_url(file,ftype):
     '''主要函数'''
     #读取文件
-    f = open(file)
+    f = open(file,'r')
     for line in f.readlines():
         #读取文件每一行
         line = line.split('\n')[0]
@@ -83,5 +94,5 @@ def send_mysql(name, str_down, ftype):
 
 if __name__ == '__main__':
     ftype = input("需要下载的类型:\n<dongzuo,xiju,aiqing,kehuan,juqing,xuannian,wenyi,zhanzheng,kongbu,zainan,lianxuju,dongman>\n:")
-    #get_url()
-    get_download_url('url_list.txt',ftype)
+    f = get_url(ftype)
+    get_download_url('url_list_xiju.txt',ftype)
