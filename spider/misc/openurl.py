@@ -11,6 +11,7 @@
 import sys
 import random
 import requests
+from bs4 import BeautifulSoup
 
 class OpenUrl(object):
     def __init__(self, url, encode = 'utf-8'):
@@ -43,6 +44,7 @@ class OpenUrl(object):
         self.__encode = encode
         self.__session = requests.Session()
         self.__cookie = None
+
     def openurl(self):
         try:
             requests.adapters.DEFAULT_RETRIES = 10
