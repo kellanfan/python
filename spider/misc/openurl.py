@@ -67,4 +67,4 @@ if __name__ == '__main__':
         else:
             print("傻逼么？不是告诉你了么？！")
             sys.exit(1)
-    print(ourl.openurl())
+    print(ourl.openurl()[1])
