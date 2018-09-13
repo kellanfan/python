@@ -40,6 +40,7 @@ class OpenUrl(object):
         self.__headers = {
               'User-agent': random.choice(self.__header_list),
               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+              'connection': 'keep-alive',
         }
         self.__encode = encode
         self.__session = requests.Session()
