@@ -8,7 +8,7 @@
 # Description: 爬取飘花网的电影资源
 
 """
-
+import os
 import re
 import time
 import sys
@@ -18,11 +18,14 @@ from bs4 import BeautifulSoup
 from lxml import etree
 from misc import mysql_connect
 from misc import openurl
+from misc.logger import Logger
 
 class Piaohua(object):
     def __init__(self,ftype):
         self.__ftype = ftype
         self.__redis_link = self.__redis_connect()
+        mylog = Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
+        self.__logger = mylog.outputLog()
 
     def __redis_connect(self):
         pool = redis.ConnectionPool(host='127.0.0.1',port=6379)
@@ -90,23 +93,24 @@ class Piaohua(object):
                      #构建最后的str
                      if list_down != []:
                          str_down = '#'.join(list_down)
-                         send_mysql(name, str_down, self.__ftype)
+                         self.send_mysql(name, str_down)
                      else:
-                         print("can not find dowload link...")
+                         self.__logger.error("[ %s ] can not find dowload link..." %name)
                  else:
-                     print("bad url: %s" %url)
+                     self.__logger.critical("bad url: [ %s ]" %url)
             else:
                 break
 
-def send_mysql(name, str_down, ftype):
-    '''将数据写入数据库'''
-    sql = "insert into piaohua(name, content, type) value ('%s', '%s', '%s')"%(name,str_down,ftype)
-    connect = mysql_connect.MysqlConnect('./misc/mysql_data.yaml')
-    code = connect.change_data('spiderdata', sql)
-    if code == 0:
-        print('%s ok'%name)
-    else:
-        print('%s error,message: %s'%(name, code))
+
+    def send_mysql(self, name, str_down):
+        '''将数据写入数据库'''
+        sql = "insert into piaohua(name, content, type) value ('%s', '%s', '%s')"%(name,str_down,self.__ftype)
+        connect = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'misc/mysql_data.yaml'))
+        code = connect.change_data('spiderdata', sql)
+        if code == 0:
+            self.__logger.info('[%s] ok'%name)
+        else:
+            self.__logger.error('[%s] error,message: [%s]'%(name, code))
 
 
 if __name__ == '__main__':

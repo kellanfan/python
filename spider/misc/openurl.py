@@ -11,7 +11,6 @@
 import sys
 import random
 import requests
-from bs4 import BeautifulSoup
 
 class OpenUrl(object):
     def __init__(self, url, encode = 'utf-8'):
