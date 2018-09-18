@@ -112,8 +112,16 @@ class HyperData(object):
             return result, lenth
 
 def main():
-    url = 'http://api.qcdemo.com:7777/iaas/'
-    zone = 'demo1'
+    try:
+        with open('./config.yaml') as f:
+            config = yaml.load(f.read())
+    except:
+        print("Cannot find the config file...")
+        sys.exit()
+    else:
+        url = config.get('url')
+        zone = config.get('zone')
+
     bots = Describe_Bots(zone,url)
     content = bots.run()
     total_hyper = content['total_count']
