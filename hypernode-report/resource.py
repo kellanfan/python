@@ -116,7 +116,7 @@ def main():
         with open('./config.yaml') as f:
             config = yaml.load(f.read())
     except:
-        print("Cannot find the config file...")
+        print "Cannot find the config file..."
         sys.exit()
     else:
         url = config.get('url')
