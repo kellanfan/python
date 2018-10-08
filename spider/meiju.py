@@ -22,9 +22,13 @@ def get_downlink(url_part):
     code,doc = ourl.openurl()
     if code == 200:
         selecter = etree.HTML(doc)
-        name = selecter.xpath("//div[@class='info-title']/h1/text()")[0]
-        links = selecter.xpath("//input[@name='down_url_list_0']/following-sibling::p/strong/a/@href")
-        if not name or not links:
+        try:
+            name = selecter.xpath("//div[@class='info-title']/h1/text()")[0]
+            links = selecter.xpath("//input[@name='down_url_list_0']/following-sibling::p/strong/a/@href")
+            if not name or not links:
+                name = ''
+                str_down = ''
+        except:
             name = ''
             str_down = ''
         else:
