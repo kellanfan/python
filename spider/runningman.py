@@ -13,7 +13,7 @@ from misc.logger import Logger
 def get_links(year):
     start_url = 'http://www.runningman-fan.com/category/runningman%s' %year
     allurl_list = []
-    for page in range(1,10):
+    for page in range(1,20): #这块需要根据具体页数进行循环
         full_url = start_url + '/page/%d' %page
         ourl = openurl.OpenUrl(full_url)
         code, doc = ourl.openurl()
