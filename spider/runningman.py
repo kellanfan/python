@@ -4,67 +4,67 @@
 import re
 import os,sys
 import time
-from misc import which_is_sunday
+from lxml import etree
 from misc import openurl
 from misc import mysql_connect
 from misc.logger import Logger
 
-class RM(object):
-    def __init__(self, year):
-        mylog = Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
-        self.logger = mylog.outputLog()
-        self.year = year
-        self.week_list = which_is_sunday.sunday(year)
 
-    def send_mysql(self, part, info):
-        sql = "insert into runningman(phase, panurl, password) value ('%s', '%s', '%s')"%(part,info[0],info[1])
-        connect = mysql_connect.MysqlConnect('./misc/mysql_data.yaml')
-        code = connect.change_data('spiderdata', sql)
-        if code == 0:
-            self.logger.info('%s ok'%part)
-        else:
-            self.logger.error('%s error,message: %s'%(part,code))
+def get_links(year):
+    start_url = 'http://www.runningman-fan.com/category/runningman%s' %year
+    allurl_list = []
+    for page in range(1,10):
+        full_url = start_url + '/page/%d' %page
+        ourl = openurl.OpenUrl(full_url)
+        code, doc = ourl.openurl()
+        time.sleep(0.5)
+        if code == 200:
+            selecter = etree.HTML(doc)
+            url_list = selecter.xpath('//h2[@class="entry-title"]/a/@href')
+            title_list = selecter.xpath('//h2[@class="entry-title"]/a/text()')
+            if not title_list:
+                continue
+            me = dict(zip(title_list, url_list))
+            for title in title_list:
+                if u'高清中字' in title:
+                    allurl_list.append(me[title])
+    return allurl_list
+
+def downurl(allurl, logger):
+    for url in allurl:
+        info = []
+        phase = re.sub('\D', "", url)
+        ourl = openurl.OpenUrl(url)
+        code, doc = ourl.openurl()
+        if code == 200:
+            selecter = etree.HTML(doc)
+            try:
+                down_link = selecter.xpath('//div[@class="buttons"]/a/@href')[0]
+                passwd = selecter.xpath('//div[@class="buttons"]/a/text()')[0]
+            except:
+                logger.error('%s get info error...'%phase)
+                continue
+        info.append(phase)
+        info.append(down_link)
+        info.append(passwd)
+        send_mysql(info, logger)
 
 
-    def run(self):
-        #构建url
-        url_head = 'http://www.runningman-fan.com/'
-        for part in self.week_list:
-            #构建最终的url
-            if self.year < 17:
-                url = url_head + str(part) + '.html'
-            else:
-                url = url_head + str(part) + '-zz.html'
-            #正则匹配
-            html_reg = re.compile(r'<a href="(.+://pan.baidu.com/s/\w*)')
-            pass_reg = re.compile(r'[密码|度盘][：|:][ ]?(\w{4})?')
-            #获取数据
-            ourl = openurl.OpenUrl(url)
-            code,html = ourl.openurl()
-
-            if code == 200:
-                password = list(set(re.findall(pass_reg, html)))
-                for pw in password:
-                    if pw != 'body' and pw != '':
-                        password = [pw]
-                html = re.findall(html_reg, html)
-                info = tuple(html + password)
-                if len(info) == 2:
-                    self.send_mysql(part, info)
-            time.sleep(0.5)
-
-def select_mysql(year):
-    sql = "select phase from runningman where phase like '%s%%' order by phase desc limit 1" %year
+def send_mysql(info, logger):
+    sql = "insert into runningman(phase, panurl, password) value ('%s', '%s', '%s')"%(info[0],info[1],info[2])
     connect = mysql_connect.MysqlConnect('./misc/mysql_data.yaml')
-    return connect.select_data('spiderdata', sql)
+    code = connect.change_data('spiderdata', sql)
+    if code == 0:
+        logger.info('%s ok'%info[0])
+    else:
+        logger.error('%s error,message: %s'%(info[0],code))
+
+def main():
+    mylog = Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
+    logger = mylog.outputLog()
+    year = input("请输入年份：")
+    allurl = get_links(year)
+    downurl(allurl, logger)
 
 if __name__ == '__main__':
-    year = input("请输入年份：")
-    code = select_mysql(year)
-    if code:
-        if year in code[0][0]:
-            print('data had it...')
-            sys.exit()
-    else:
-        a = RM(int(year))
-        a.run()
+    main()
