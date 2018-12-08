@@ -12,15 +12,13 @@ import time
 import sys
 from  multiprocessing import Process
 
+def str2int(x):
+    return int(x)
 
-def naozhong(tmp):
+def naozhong(date,timer):
     #先对得到的时间进行格式化处理
-    year = int(tmp.split()[0].split('-')[0])
-    month = int(tmp.split()[0].split('-')[1])
-    day = int(tmp.split()[0].split('-')[2])
-    hour = int(tmp.split()[1].split(':')[0])
-    minute = int(tmp.split()[1].split(':')[1])
-    second = int(tmp.split()[1].split(':')[2])
+    year, month, day = map(str2int, date.split('-'))
+    hour, minute, second = map(str2int, timer.split(':'))
     #检查输入是否正确
     if month in range(1,13) and day in range(1,32) and hour in range(0,24) and minute in range(0,60) and second in range(0,60):
         wake_time = datetime.datetime(year, month, day, hour, minute, second)
@@ -46,26 +44,16 @@ def main():
         print(
 """
 Usage:
-    naozhong <YYYY-MM-DD> <HH:MM:SS> &
+    naozhong <YYYY-MM-DD> <HH:MM:SS>
 Example:
-    naozhong 2018-02-14 12:12:12 &
+    naozhong 2018-02-14 12:12:12
 """)
         sys.exit(2)
 
-    ymd = sys.argv[1]
-    hms = sys.argv[2]
-    tmp = ymd + ' ' + hms
-    #num = 0
-    #while True:
-        #交互式获取时间
-        #tmp = input("请输入闹钟时间(例如：2018-2-14 12:30:00)<退出请输入exit>：")
-        #if tmp == 'exit':
-            #print('现在共运行%d个闹钟...'%num)
-            #print('请将进程切换到后台运行！！！(ctrl + z)')
-            #break
-    p = Process(target=naozhong, args=(tmp,))
+    date = sys.argv[1]
+    timer = sys.argv[2]
+    p = Process(target=naozhong, args=(date,timer))
     p.start()
-        #num += 1
 
 if __name__ == '__main__':
     main()
