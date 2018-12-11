@@ -59,5 +59,5 @@ class Logger(object):
         return configs
 
 if __name__ == '__main__':
-    mylog = Logger('logger.yaml')
+    mylog = Logger('logger.yml')
     logger = mylog.outputLog()
