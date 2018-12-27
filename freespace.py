@@ -18,6 +18,4 @@ for dir in dirlist:
         if os.path.isfile(path):
             if os.path.getsize(path) >= 10240000 and path.endswith('.log'):
                 os.remove(path)
-                #with open(path,'w') as f:
-                #    f.truncate()
-                print "clean ok..."
+                print("clean ok...")
