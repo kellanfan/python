@@ -9,7 +9,7 @@
 
 """
 
-class Animal: #父类，基类
+class Animal(object): #父类，基类
     def eat(self):
         print "---吃---"
     def dirik(self):
@@ -24,9 +24,9 @@ class Lanmao(Cat):
         print "---狂吃---"
     def jiao(self):
         print "---说话了---"
-        #第一种调用被重写的方法
+        #第一种调用被重写的方法,不建议用，直接用类名调用父类方法在使用单继承的时候没问题，但是如果使用多继承，会涉及到查找顺序（MRO）、重复调用（钻石继承）等种种问题。
         #Cat.jiao(self) #self要写上
-        #第二种
+        #第二种,super只能用于新类，就是要加object的
         super(Lanmao, self).jiao()
 
 lan = Lanmao()
