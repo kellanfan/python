@@ -72,7 +72,8 @@ class HyperData(object):
 
         result = []
         lenth = len(self.__hyper_list)
-        if vcpu == 0 or vmem == 0 or vdisk == 0:
+        #if vcpu == 0 or vmem == 0 or vdisk == 0:
+        if not all([vcpu,vmem,vdisk]):
             return result
         else:
             real_mem = int(real_mem/1024)
