@@ -15,6 +15,9 @@ def test():
         print(tmp)
         i += 1
 
-a = test()
-a.send(None) #send的作用就是将这个值发送给tmp,如果第一次就使用send的话，程序会崩，因为第一次没有tmp可以接收，所以第一次可以先传个None，a.send(None)
-
+t = test()
+#第一次运行只能使用next或者send(None)
+print(t.__next__())
+#send的作用相当于使生成器继续运行，并且传递的参数为yield的返回值(程序中即temp的值)
+print(t.send("Hello World"))
+print(t.__next__())#相当于send(None) 此时temp = None

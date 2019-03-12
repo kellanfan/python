@@ -8,9 +8,8 @@
 # Description: reload函数在imp模块中，它的作用是，当你的模块有修改，有不想退出程序再进的时候可以使用这个函数重新导入模块
 
 """
-
+import sys
+sys.getdefaultencoding()
 from imp import *
-
-import test
-
-test.test()
+reload(sys)
+sys.getdefaultencoding()
