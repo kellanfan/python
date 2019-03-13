@@ -8,5 +8,5 @@
 # Description:
 
 """
-
-from misc import *
+#为了兼容2/3版本
+from . import *
