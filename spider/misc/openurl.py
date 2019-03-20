@@ -33,9 +33,7 @@ class OpenUrl(object):
             response.encoding = self.__encode
             return response.status_code, response.text
         except:
-            status_code = 400
-            text = None
-            return status_code, text
+            return 400, None
 
 if __name__ == '__main__':
     url = input("请输入url：")
