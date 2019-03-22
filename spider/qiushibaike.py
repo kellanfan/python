@@ -19,7 +19,7 @@ def send_mysql(item, logger):
         '''将数据写入数据库'''
         sql = "insert into qiubai(imgurl, username, content, vote, comment) value ('%s', '%s', '%s', '%s', '%s')"%(item['imgUrl'], item['username'], item['content'], item['vote'], item['comment'])
         connect = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'misc/mysql_data.yaml'))
-        code = connect.change_data('spiderdata', sql)
+        code = connect.change_data(sql)
         if code == 0:
             logger.info('[%s] ok'%item['username'])
         else:

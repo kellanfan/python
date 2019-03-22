@@ -53,7 +53,7 @@ def downurl(allurl, logger):
 def send_mysql(info, logger):
     sql = "insert into runningman(phase, panurl, password) value ('%s', '%s', '%s')"%(info[0],info[1],info[2])
     connect = mysql_connect.MysqlConnect('./misc/mysql_data.yaml')
-    code = connect.change_data('spiderdata', sql)
+    code = connect.change_data(sql)
     if code == 0:
         logger.info('%s ok'%info[0])
     else:

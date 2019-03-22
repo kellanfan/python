@@ -23,7 +23,7 @@ class Logger(object):
         mythread.acquire()
       
         self.log_file_path = config.get('log_file_path')
-        self.maxBytes = int(config.get('maxBytes'))
+        self.maxBytes = eval(config.get('maxBytes'))
         self.backupCount = int(config.get('backupCount'))
         self.outputConsole_level = int(config.get('outputConsole_level'))
         self.outputFile_level = int(config.get('outputFile_level'))
@@ -32,6 +32,9 @@ class Logger(object):
         self.formatter = logging.Formatter('%(asctime)s  %(levelname)s -%(thread)d- %(filename)s : %(message)s')
   
         mythread.release()
+
+    def __call__(self):
+        return self.outputLog()
 
     def outputLog(self):
         '''put out log'''
@@ -60,4 +63,5 @@ class Logger(object):
 
 if __name__ == '__main__':
     mylog = Logger('logger.yml')
-    logger = mylog.outputLog()
+    aa = mylog()
+    aa.error('aaa')

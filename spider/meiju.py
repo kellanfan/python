@@ -41,7 +41,7 @@ def get_downlink(url_part):
 def send_mysql(name, str_down,logger):
     sql = "insert into meiju(name, content) value ('%s', '%s')"%(name,str_down)
     connect = mysql_connect.MysqlConnect('./misc/mysql_data.yaml')
-    code = connect.change_data('spiderdata', sql)
+    code = connect.change_data(sql)
     if code == 0:
         logger.info('[%s] ok'%name)
     else:

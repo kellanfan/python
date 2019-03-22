@@ -85,7 +85,7 @@ class Hanfan(object):
     def send_mysql(self, name, cloudpan_url, cloudpan_pass):
         '''将数据写入数据库'''
         sql = "insert into hanfan(name, url, panpass) value ('%s', '%s', '%s')" %(name.decode(),cloudpan_url,cloudpan_pass)
-        code = self.mysql_connect.change_data('spiderdata', sql)
+        code = self.mysql_connect.change_data(sql)
         if code == 0:
             self.__logger.info('[%s] ok'%name.decode())
         else:

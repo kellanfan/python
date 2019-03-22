@@ -106,7 +106,7 @@ class Piaohua(object):
         '''将数据写入数据库'''
         sql = "insert into piaohua(name, content, type) value ('%s', '%s', '%s')"%(name,str_down,self.__ftype)
         connect = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'misc/mysql_data.yaml'))
-        code = connect.change_data('spiderdata', sql)
+        code = connect.change_data(sql)
         if code == 0:
             self.__logger.info('[%s] ok'%name)
         else:

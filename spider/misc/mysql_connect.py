@@ -10,47 +10,56 @@
 """
 import pymysql
 import yaml
+import sys
+#本地logger模块
+from logger import Logger
 
 class MysqlConnect(object):
     def __init__(self,filename):
         self.__file = filename
-        self.__host = self.__getconfig()['host']
-        self.__user = self.__getconfig()['user']
-        self.__password = self.__getconfig()['password']
+        self.__configs = self.__getconfig()
+        self.__mylogger = Logger('mysql_log.yaml').outputLog()
+        try:
+            self.__host = self.__configs['host']
+            self.__user = self.__configs['user']
+            self.__password = self.__configs['password']
+            self.__database = self.__configs['database']
+        except:
+            self.__mylogger.error('配置文件中缺少相关参数，请检查..')
+            sys.exit()
 
     def __getconfig(self):
         with open(self.__file) as f:
             configs = yaml.load(f.read())
-        f.close()
         return configs
 
-    def open(self,basename):
-        #可以把数据库名basename放在实例属性中，既可以当做参数，也可以写到yaml配置文件中,这个无所谓，因为现在所有
-        #代码都是用一个yaml文件，暂时就先放在这设置就好。
-        self.db = pymysql.connect(self.__host,self.__user,self.__password, basename, use_unicode=True, charset="utf8")
+    def open(self):
+        self.db = pymysql.connect(self.__host,self.__user,self.__password, self.__database, use_unicode=True, charset="utf8")
         self.cursor = self.db.cursor()
 
     def close(self):
         self.cursor.close()
         self.db.close()
 
-    def change_data(self, basename, sql):
+    def change_data(self, sql):
         try:
-            self.open(basename)
+            self.open()
             self.cursor.execute(sql)
             self.db.commit()
             return 0
         except Exception as e:
             self.db.rollback()
+            self.__mylogger(e)
             return e
         finally:
             self.close()
 
-    def select_data(self, basename, sql):
+    def select_data(self, sql):
         try:
-            self.open(basename)
+            self.open()
             self.cursor.execute(sql)
         except Exception as e:
+            self.__mylogger(e)
             return e
         else:
             return self.cursor.fetchall()
@@ -60,4 +69,4 @@ class MysqlConnect(object):
 if __name__ == '__main__':
     a = MysqlConnect('mysql_data.yaml')
     sql = input("the sql: ")
-    print(len(a.select_data('spiderdata',sql)))
+    print(len(a.select_data(sql)))
