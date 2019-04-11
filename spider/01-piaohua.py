@@ -156,7 +156,7 @@ def main(args):
     #从redis中获取url，获取数据，并写入数据库
     for fkey in ftype_list:
         if args.update:
-            current_updatetime = mysql_connect.select_data('select updatetime from piaohua order by updatetime desc limit by 1')
+            current_updatetime = mysql_con.select_data('select updatetime from piaohua order by updatetime desc limit by 1')
         elif args.all:
             current_updatetime = '2000-01-01'
 
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--all', help='获取全部数据', action="store_true")
     parser.add_argument('-u', '--update', help='更新数据', action="store_true")
     args= parser.parse_args()
-    if not args.all or args.update:
+    if not args.all and not args.update:
         print("请使用-h获取帮助信息..")
         exit()
     main(args)
