@@ -12,20 +12,20 @@ import pymysql
 import yaml
 import sys
 #本地logger模块
-from logger import Logger
+#from logger import Logger
 
 class MysqlConnect(object):
     def __init__(self,filename):
         self.__file = filename
         self.__configs = self.__getconfig()
-        self.__mylogger = Logger('mysql_log.yaml').outputLog()
+        #self.__mylogger = Logger('mysql_log.yaml').outputLog()
         try:
             self.__host = self.__configs['host']
             self.__user = self.__configs['user']
             self.__password = self.__configs['password']
             self.__database = self.__configs['database']
         except:
-            self.__mylogger.error('配置文件中缺少相关参数，请检查..')
+            #self.__mylogger.error('配置文件中缺少相关参数，请检查..')
             sys.exit()
 
     def __getconfig(self):
@@ -49,7 +49,7 @@ class MysqlConnect(object):
             return 0
         except Exception as e:
             self.db.rollback()
-            self.__mylogger(e)
+            #self.__mylogger(e)
             return e
         finally:
             self.close()
@@ -59,7 +59,7 @@ class MysqlConnect(object):
             self.open()
             self.cursor.execute(sql)
         except Exception as e:
-            self.__mylogger(e)
+            #self.__mylogger(e)
             return e
         else:
             return self.cursor.fetchall()
@@ -69,4 +69,4 @@ class MysqlConnect(object):
 if __name__ == '__main__':
     a = MysqlConnect('mysql_data.yaml')
     sql = input("the sql: ")
-    print(len(a.select_data(sql)))
+    print(a.select_data(sql))
