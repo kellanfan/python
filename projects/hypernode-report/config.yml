@@ -1,0 +1,12 @@
+url: 'http://api.xxx.com:7777/iaas/'
+access_key_id: 'xxx'
+secret_access_key: 'xxxx'
+zones:
+    xxx1: #zone_id
+        - 'plg-00000000'
+        - 'plg-00000001'
+        - 'plg-00000002'
+    #有子zone的话追加
+    xxx2: #子zone_id
+        - 'plg-00000000'
+        - 'plg-00000001'

@@ -117,7 +117,7 @@ class HyperData(object):
 
 def main():
     try:
-        with open('./config.yaml') as f:
+        with open('./config.yml') as f:
             config = yaml.load(f.read())
     except:
         print "Cannot find the config file..."
@@ -138,7 +138,7 @@ def main():
             content_botset = content1['bot_set'] + content['bot_set']
         else:
             content_botset = content['bot_set']
-        for plg in config['zones'][zone]['plgs']:
+        for plg in config['zones'][zone]:
             plg_info = HyperData(content_botset, plg)
             count,infomations = plg_info.cal_data()
             print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
