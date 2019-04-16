@@ -12,11 +12,10 @@ import urllib, urllib2, datetime
 import json
 import base64, hmac
 from hashlib import sha256
-from key import value
 
 class Describe_Bots(object):
-    def __init__(self, zone, url, offset='0'):
-        self.__secret_access_key = value.get('secret_access_key')
+    def __init__(self, zone, url, access_key_id, secret_access_key, offset='0'):
+        self.__secret_access_key = secret_access_key
         self.__url = url
         self.__data = { 
             'action':'DescribeBots',
@@ -26,7 +25,7 @@ class Describe_Bots(object):
             'signature_method':'HmacSHA256',
             'signature_version':'1',
             'zone': zone,
-            'access_key_id': value.get('access_key_id'),
+            'access_key_id': access_key_id,
             }
         self.__header = {
             'user-agent': ('Mozilla/5.0 (Windows NT 6.2; WOW64)'

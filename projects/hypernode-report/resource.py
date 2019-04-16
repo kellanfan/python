@@ -51,7 +51,10 @@ class HyperData(object):
                 print "\033[0;31m%s status is %s!!! Maybe broken, please check!!! \033[0m" %(host_machine, status)
                 continue
             try:
-                place_group_ids = hypernode['place_group_id_bak']
+                if hypernode.has_key('place_group_id_bak'):
+                    place_group_ids = hypernode['place_group_id_bak']
+                else:
+                    place_group_ids = hypernode['place_group_ids'][0]
             except:
                 print "%s info cannot get!!!" %host_machine
                 continue
@@ -110,7 +113,7 @@ class HyperData(object):
             result.append(int(per_vcpu))
             result.append(int(per_vmem))
             result.append(int(per_vdisk))
-            return result, lenth
+            return lenth,result
 
 def main():
     try:
@@ -122,8 +125,11 @@ def main():
     else:
         url = config.get('url')
         zone = config.get('zone')
+        access_key_id = config.get('access_key_id')
+        secret_access_key = config.get('secret_access_key')
+        plgs = config.get('plgs')
 
-    bots = Describe_Bots(zone,url)
+    bots = Describe_Bots(zone,url,access_key_id,secret_access_key)
     content = bots.run()
     total_hyper = content['total_count']
     if total_hyper > 100:
@@ -131,9 +137,10 @@ def main():
         content_botset = content1['bot_set'] + content['bot_set']
     else:
         content_botset = content['bot_set']
-
-    sas = HyperData(content_botset, 'plg-00000000')
-    print sas.cal_data()
+    for plg in plgs:
+        plg_info = HyperData(content_botset, plg)
+        count,infomations = plg_info.cal_data()
+        print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
 
 if __name__ == '__main__':
     main()
