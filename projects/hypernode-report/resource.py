@@ -124,23 +124,24 @@ def main():
         sys.exit()
     else:
         url = config.get('url')
-        zone = config.get('zone')
         access_key_id = config.get('access_key_id')
         secret_access_key = config.get('secret_access_key')
-        plgs = config.get('plgs')
+        zones = config['zones'].keys()
 
-    bots = Describe_Bots(zone,url,access_key_id,secret_access_key)
-    content = bots.run()
-    total_hyper = content['total_count']
-    if total_hyper > 100:
-        content1 = Describe_Bots(zone, url, '100')
-        content_botset = content1['bot_set'] + content['bot_set']
-    else:
-        content_botset = content['bot_set']
-    for plg in plgs:
-        plg_info = HyperData(content_botset, plg)
-        count,infomations = plg_info.cal_data()
-        print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
+    for zone in zones:
+        print "%s:" %zone
+        bots = Describe_Bots(zone,url,access_key_id,secret_access_key)
+        content = bots.run()
+        total_hyper = content['total_count']
+        if total_hyper > 100:
+            content1 = Describe_Bots(zone, url, '100')
+            content_botset = content1['bot_set'] + content['bot_set']
+        else:
+            content_botset = content['bot_set']
+        for plg in config['zones'][zone]['plgs']:
+            plg_info = HyperData(content_botset, plg)
+            count,infomations = plg_info.cal_data()
+            print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
 
 if __name__ == '__main__':
     main()
