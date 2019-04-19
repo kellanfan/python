@@ -51,10 +51,7 @@ class HyperData(object):
                 print "\033[0;31m%s status is %s!!! Maybe broken, please check!!! \033[0m" %(host_machine, status)
                 continue
             try:
-                if hypernode.has_key('place_group_id_bak'):
-                    place_group_ids = hypernode['place_group_id_bak']
-                else:
-                    place_group_ids = hypernode['place_group_ids'][0]
+                place_group_ids = hypernode['place_group_ids'][0]
             except:
                 print "%s info cannot get!!!" %host_machine
                 continue
@@ -140,8 +137,12 @@ def main():
             content_botset = content['bot_set']
         for plg in config['zones'][zone]:
             plg_info = HyperData(content_botset, plg)
-            count,infomations = plg_info.cal_data()
-            print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
+            try:
+                count,infomations = plg_info.cal_data()
+                print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
+            except:
+                print "the informations has wrong part, please check.."
+                exit()
 
 if __name__ == '__main__':
     main()
