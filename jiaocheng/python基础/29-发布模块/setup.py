@@ -1,13 +1,20 @@
-from distutils.core import setup
-setup(name='test',version='1.0',description='a test python packge', author='Kellan Fan', py_modules=['bao.Gcc', 'bao.Pots'])
+#/usr/bin/env python
+#coding=utf8
+"""
+# Author: kellanfan
+# Created Time : Mon 22 Apr 2019 10:38:22 AM CST
 
-#这里面指定需要包含的py文件，注意没有后缀
-#构建：python setup.py build
-#生成发布压缩包： python setup.py sdist
+# File Name: setup.py
+# Description:
 
-#安装
-#1. 找到模块的压缩包
-#2. 解压
-#3. 进入文件件夹
-#4. 执行命令 python setup.py install
-#注意：如果在install的时候，执行目录安装，可以使用 python setup.pinstall --prefix=安装路径
+"""
+from setuptools import find_packages,setup
+setup(
+    name = 'kellan-test',
+    version = '0.1',
+    author = 'Kellan',
+    author_email = 'kellan@kellan.com',
+    description = 'A small example package',
+    url = "www.kellantest.com",
+    packages = find_packages()
+            )

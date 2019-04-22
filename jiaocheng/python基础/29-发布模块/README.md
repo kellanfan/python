@@ -5,13 +5,20 @@
 2.在模块的根目录上创建setup.py文件
 文件内容大致如下：
 ```
-from distutils.core import setup
-setup(name='test',version='1.0',description='a test python packge', author='Kellan Fan', py_modules=['bao.Gcc', 'bao.Pots']) 
+from setuptools import find_packages,setup
+setup(
+    name = 'kellan-test', #包名称
+    version = '0.1', #版本
+    author = 'Kellan', #作者
+    description="A small example package", #描述
+    url = "www.kellantest.com", #项目主页
+    packages = find_packages() #
+            )
+
 ```
-就是做一些信息说明，其中```py_modules```就是你要发布的模块列表
 
 3.执行``` python(3) setup.py bulid``` 构建模块
 
-4.执行```python(3) setup.py sdist``` 压缩模块
+4.执行```python(3) setup.py sdist bdist_egg``` 压缩模块
 
 5.安装就是把压缩包解压 python(3) setup.py install
