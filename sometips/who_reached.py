@@ -1,4 +1,3 @@
-#/usr/bin/env python
 #coding=utf8
 """
 # Author: kellanfan
@@ -25,3 +24,5 @@ mypings = Ping(timeout=3)
 for i in IP(ip):
     if mypings.ping(str(i)).is_reached():
         print("%s is reached.."%i)
+    else:
+        print("%s cannot reached.."%i)
