@@ -1,4 +1,4 @@
-#/usr/bin/env python
+
 #coding=utf8
 """
 # Author: kellanfan
@@ -25,5 +25,5 @@ class Bloomfolter(object):
         return self.values[h]
 
     def print_contents(self):
-        print self.values
+        print(self.values)
 

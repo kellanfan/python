@@ -13,9 +13,9 @@ import base64
 
 l = 'sdfqwerzxc'
 el = base64.b64encode(l)
-print "the encode is %s.." %el
+print("the encode is %s.." %el)
 a = el.split('=')[0]
-print "the code is %s.." %a
+print("the code is %s.." %a)
 for i in range(10):
     cnum = 4 * i - len(a)
     if cnum > 0:
@@ -23,7 +23,7 @@ for i in range(10):
         al = a + ls
         break
 deal = base64.b64decode(al)
-print "the decode is %s.." %deal
+print("the decode is %s.." %deal)
         
-print base64.b64encode('i\xb7\x1d\xfb\xef\xff')
-print base64.urlsafe_b64encode('i\xb7\x1d\xfb\xef\xff')
+print(base64.b64encode('i\xb7\x1d\xfb\xef\xff'))
+print(base64.urlsafe_b64encode('i\xb7\x1d\xfb\xef\xff'))
