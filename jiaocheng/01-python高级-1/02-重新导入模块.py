@@ -10,6 +10,6 @@
 """
 import sys
 sys.getdefaultencoding()
-from imp import *
+from imp import reload
 reload(sys)
 sys.getdefaultencoding()

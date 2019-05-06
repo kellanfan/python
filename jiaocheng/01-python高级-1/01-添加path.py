@@ -1,4 +1,4 @@
-#/usr/bin/env python
+
 #coding=utf8
 """
 # Author: kellanfan
@@ -9,10 +9,10 @@
 
 """
 import sys
-print sys.path
+print(sys.path)
 
 sys.path.append('/home')
-print sys.path
+print(sys.path)
 
 '''
 模块循环导入问题，就是2个程序相互导入对方的模块，解决方法是有个主程序去调用，子程序之间不相互调用
