@@ -16,7 +16,7 @@ def handledata(ret):
     disk_read_avgvalue = None
     disk_write_maxvalue = None
     disk_write_avgvalue = None
-    if ret['meter_set']:
+    if 'meter_set' in ret.keys():
         for items in ret['meter_set']:
             if not items['data']:
                 continue
@@ -76,4 +76,4 @@ for line in g.readlines():
     sev_day_ret = conn.get_monitoring_data(instance_id ,['cpu','memory','disk-iops-os'],'5m', start_sev_time, end_time)
     one_day_result_list = handledata(one_day_ret)
     sev_day_result_list = handledata(sev_day_ret)
-    print "instance_id:%s, one day: %s, 7 day: %s"%(instance_id,str(one_day_result_list),str(sev_day_result_list))
+    print("instance_id:%s, one day: %s, 7 day: %s"%(instance_id,str(one_day_result_list),str(sev_day_result_list)))
