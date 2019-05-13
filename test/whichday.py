@@ -1,25 +1,31 @@
-#!/usr/bin/python
-# -*- coding: UTF-8 -*-
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   whichday.py
+@Time    :   2019/05/13 08:38:36
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   判断输入的日期是一年中的第几天
+'''
 
-date = raw_input("需要查询的时间 eg:1999-01-01: ")
-def form(date):
-    list = date.split('-')
-    return list
+# here put the import lib
+import datetime
+import sys
 
-s = form(date)
-year = int(s[0])
-month = int(s[1])
-day = int(s[2])
-months = (0, 31, 59, 90,120,151,181,212,243,273,304,334)
-if 0 < month <= 12 or 0 < day <= 31:
-    sum = months[month -1]
-else:
-    print "Error: date Error"
-
-sum += day
-leap = 0
-if (year % 400 == 0) or ((year % 4 == 0) and (year % 100 != 0)):
-    leap = 1
-if (leap == 1) and (month > 2):
-    sum += 1
-print 'it is the %dth day.' % sum
+if __name__ == '__main__':
+    date = input("需要查询的时间 eg:1999-01-01: ")
+    try:
+        list = date.split('-')
+        year,month,day = map(int, list)
+    except ValueError as e:
+        print("Error: %s"%e)
+        sys.exit()
+    try:
+        end_day = datetime.datetime(year,month,day)
+    except ValueError as e:
+        print("Error: %s"%e)
+        sys.exit()
+    first_day = datetime.datetime(year,1,1)
+    t= (end_day - first_day).days
+    print("It is the %dth day."%t)
