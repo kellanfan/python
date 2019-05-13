@@ -22,7 +22,7 @@ class Test(object):
 
 t = Test()
 t.num = 9 #相当于调用了 t.setnum(9)
-print t.num #相当于调用了 t.getnum()
+print(t.num) #相当于调用了 t.getnum()
 
 #注意点:
 #t.num到底调用哪个，要根据实际场景来判断

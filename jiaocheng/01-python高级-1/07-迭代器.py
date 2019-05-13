@@ -12,22 +12,21 @@
 
 #可迭代对象：
 #一类是集合数据类型，如list, tuple, dict, set, str
-#一类是generator,包括生成器和带yield的gneerator function
+#一类是generator,包括生成器和带yield的generator function
 
 #判断是否可以迭代
-from collections import Iterable
+from collections.abc import Iterable, Iterator
 
-from collections import Iterator
-print isinstance([],Iterable)
-print isinstance(100,Iterable)
+print(isinstance([],Iterable))
+print(isinstance(100,Iterable))
 
 #可迭代不一定是迭代对象
 
-print isinstance([],Iterator)
-print isinstance((x for x in range(10)),Iterator)
+print(isinstance([],Iterator))
+print(isinstance((x for x in range(10)),Iterator))
 
 #生成器都是迭代对象，但是list，dict，str虽然是Iterable，但不是Iterator
 #可以用iter函数把list等变成Iterator
 
-print isinstance(iter([]),Iterator)
-print isinstance(iter('abc'),Iterator)
+print(isinstance(iter([]),Iterator))
+print(isinstance(iter('abc'),Iterator))
