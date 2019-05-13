@@ -156,7 +156,7 @@ def main(args):
     #从redis中获取url，获取数据，并写入数据库
     for fkey in ftype_list:
         if args.update:
-            current_updatetime = mysql_con.select_data('select updatetime from piaohua order by updatetime desc limit by 1')
+            current_updatetime = mysql_conn.select_data('select updatetime from piaohua order by updatetime desc limit by 1')
         elif args.all:
             current_updatetime = '2000-01-01'
 
@@ -164,7 +164,8 @@ def main(args):
             moive = PiaohuaSpider('https://www.piaohua.com' + value.decode('utf-8'), mylogger)
             if not moive.html or not moive.down_url:
                 continue
-            if operator.gt(current_updatetime, moive.public_time):
+            public_time = moive.public_time
+            if operator.gt(current_updatetime, public_time):
                 break
             send_mysql(moive.moivename, fkey, moive.public_time, moive.down_url, mysql_conn, mylogger)
             time.sleep(0.5)
