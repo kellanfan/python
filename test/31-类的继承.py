@@ -5,7 +5,7 @@ class School(object):
     def __init__(self, sname):
         self.sname = sname
     def ps(self):
-        print "i\'m in the %s school" %self.sname
+        print("i\'m in the %s school" %self.sname)
 
 class Student(School):
 
@@ -14,7 +14,7 @@ class Student(School):
         self.__score = score
         School.__init__(self,sname)
     def print_score(self):
-        print '%s: %s' % (self.__name, self.__score)
+        print('%s: %s' % (self.__name, self.__score))
 
     def get_name(self):
         return self.__name
@@ -27,18 +27,18 @@ class Student(School):
         if score < 0 or score > 100:
             raise ValueError('score must between 0 and 100')
     def ps1(self):
-        print "I\'m in %s , and my name is %s" %(self.sname, self.__name)
+        print("I\'m in %s , and my name is %s" %(self.sname, self.__name))
 
 class Teacher(object):
     def ps(self):
-        print "i\'m not in School class and Student Class,but i have ps"
+        print("i\'m not in School class and Student Class,but i have ps")
     def ps1(self):
-        print "i\'m not in School class and Student Class,but i have ps1"
+        print("i\'m not in School class and Student Class,but i have ps1")
 
 def f(x):
     x.ps()
     x.ps1()
 
-
+    
 f(Student('hengshui','kellan','100'))
 f(Teacher())
