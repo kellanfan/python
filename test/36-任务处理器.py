@@ -1,15 +1,17 @@
-#/usr/bin/env python
-#coding=utf8
-"""
-# Author: kellanfan
-# Created Time : Wed 26 Jul 2017 08:21:57 PM CST
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   taskworker.py
+@Time    :   2019/05/14 09:57:23
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
 
-# File Name: taskworker.py
-# Description:
+# here put the import lib
 
-"""
-
-import Queue, time, sys
+import queue, time, sys
 from multiprocessing.managers import BaseManager
 # 创建类似的QueueManager
 class Queuemanager(BaseManager):
@@ -20,7 +22,7 @@ Queuemanager.register('send_task_queue')
 Queuemanager.register('get_task_queue')
 #连接到manager server
 server_address = '127.0.0.1'
-print 'connect to server %s...' %server_address
+print('connect to server %s...' %server_address)
 # 端口和验证码注意保持与taskmanager.py设置的完全一致:
 m = Queuemanager(address=(server_address,6666), authkey=123456)
 #从网络连接到server
@@ -32,11 +34,11 @@ get = m.get_task_queue()
 for i in range(10):
     try:
         n = send.get(timeout=1)
-        print 'running %d * %d ' %(n, n)
+        print('running %d * %d ' %(n, n))
         r = '%d * %d = %d' %(n, n, n*n)
         time.sleep(1) #每取一个数，sleep 1s 要不过程太快
         get.put(r)
-    except Queue.Empty:    #当取完最后一个数后，要做相应的处理
-        print 'task queue is empty...'
+    except queue.Empty:    #当取完最后一个数后，要做相应的处理
+        print('task queue is empty...')
 #处理结束
-print 'woker done...'
+print('woker done...')
