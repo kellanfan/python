@@ -1,3 +1,16 @@
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   city_code.py
+@Time    :   2019/05/13 12:29:46
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
+
+# here put the import lib
+
 city = {
  '北京': '101010100',
  '海淀': '101010200',

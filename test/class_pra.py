@@ -1,5 +1,16 @@
-#!/usr/bin/python
-# -*- coding: UTF-8 -*-
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   class_pra.py
+@Time    :   2019/05/13 11:49:26
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
+
+# here put the import lib
+
 
 class Programer(object):
     def __init__(self, name, age):
@@ -7,7 +18,7 @@ class Programer(object):
         if isinstance(age, int):
             self.age = age
         else:
-            return Exception('age must be int')
+            raise Exception('age must be int')
 
     def __eq__(self, other):
         if isinstance(other, Programer):
@@ -39,6 +50,6 @@ if __name__ == '__main__':
     p = Programer('Allan', 23)
     p1 = Programer('Kellan', 25)
     p2 = Programer('huan', 24)
-    print p1 == p2
-    print p1 + p2
-    print p.name
+    print(p1 == p2)
+    print(p1 + p2)
+    print(p.name)
