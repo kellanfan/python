@@ -1,16 +1,20 @@
-#/usr/bin/env python
-"""
-# Author: kellanfan
-# Created Time : Mon 16 Apr 2018 11:11:09 PM CST
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   11-小闹钟.py
+@Time    :   2019/05/21 11:26:50
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
 
-# File Name: naozhong.py
-# Description:
+# here put the import lib
 
-"""
 import datetime
 import time
 import sys
-from  multiprocessing import Process
+from  multiprocessing import Pool
 
 def str2int(x):
     return int(x)
@@ -52,7 +56,9 @@ Example:
 
     date = sys.argv[1]
     timer = sys.argv[2]
-    p = Process(target=naozhong, args=(date,timer))
+    p = Pool(10)
+    p.apply_async(naozhong, (date,timer))
+    p.close()
     p.start()
 
 if __name__ == '__main__':

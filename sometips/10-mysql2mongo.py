@@ -1,13 +1,16 @@
-#/usr/bin/env python
-#coding=utf8
-"""
-# Author: kellanfan
-# Created Time : Mon 15 Apr 2019 12:54:09 PM CST
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   mysql2mongo.py
+@Time    :   2019/05/21 11:23:00
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   将mysql数据转到mongodb中
+'''
 
-# File Name: mysql2mongo.py
-# Description:
+# here put the import lib
 
-"""
 import os
 import yaml
 import pymysql
