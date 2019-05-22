@@ -1,19 +1,21 @@
-#/usr/bin/env python
-#coding=utf8
-"""
-# Author: kellanfan
-# Created Time : Sun 09 Sep 2018 09:20:09 PM CST
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   freespace.py
+@Time    :   2019/05/21 11:09:00
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
 
-# File Name: freespace.py
-# Description:
-
-"""
+# here put the import lib
 
 import os
 
 def get_files(path):
     file_list = []
-    for root,dirs,files in os.walk(path):
+    for root,files in os.walk(path):
         for name in files:
             file_list.append(os.path.join(root, name))
     return file_list

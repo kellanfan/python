@@ -1,3 +1,16 @@
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   09-监控底层物理机io.py
+@Time    :   2019/05/21 11:26:00
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
+
+# here put the import lib
+
 import os
 import time
 def check_io():

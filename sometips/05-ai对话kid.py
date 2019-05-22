@@ -1,13 +1,16 @@
-#/usr/bin/env python
-#coding=utf8
-"""
-# Author: kellanfan
-# Created Time : Fri 14 Dec 2018 09:48:40 AM CST
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   aiplay.py
+@Time    :   2019/05/21 10:57:12
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
 
-# File Name: aiplay.py
-# Description:
+# here put the import lib
 
-"""
 class Ai(object):
     def play(self):
         while True:
@@ -19,6 +22,6 @@ class Ai(object):
             print(ask)
             if ask == 'bye':
                 break
-            
-ai = Ai()
-ai.play()
+if __name__ == "__main__":
+    ai = Ai()
+    ai.play()
