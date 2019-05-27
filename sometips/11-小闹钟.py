@@ -14,7 +14,7 @@
 import datetime
 import time
 import sys
-from  multiprocessing import Pool
+import daemon
 
 def str2int(x):
     return int(x)
@@ -56,10 +56,8 @@ Example:
 
     date = sys.argv[1]
     timer = sys.argv[2]
-    p = Pool(10)
-    p.apply_async(naozhong, (date,timer))
-    p.close()
-    p.start()
+    with daemon.DaemonContext():
+        naozhong(date, timer)
 
 if __name__ == '__main__':
     main()
