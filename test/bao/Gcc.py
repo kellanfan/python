@@ -2,4 +2,4 @@
 # -*- coding: UTF-8 -*-
  
 def Gcc():
-   print "I'm Gcc Phone"
+   print("I'm Gcc Phone")
