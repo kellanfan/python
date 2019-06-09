@@ -12,9 +12,9 @@
 import zookeeper
 
 def myWatch(zk,type,state,path):
-    print "zk:",str(type),str(state),str(path)
+    print("zk:",str(type),str(state),str(path))
     zookeeper.get(zk,path,myWatch)
 
-zk = zookeeper.init("localhost:2181")
+zk = zookeeper.init("192.168.10.10:2181")
 data=zookeeper.get(zk,"/zk-bbb",myWatch)
-print data
+print(data)
