@@ -1,13 +1,16 @@
-#/usr/bin/env python
-#coding=utf8
-"""
-# Author: kellanfan
-# Created Time : Wed 13 Mar 2019 06:40:54 PM CST
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   simple_tcp_server.py
+@Time    :   2019/06/09 08:39:57
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
 
-# File Name: simple_udp_server.py
-# Description:
+# here put the import lib
 
-"""
 import time
 import socketserver
 
