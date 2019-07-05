@@ -73,7 +73,7 @@ class HyperData(object):
         result = []
         lenth = len(self.__hyper_list)
         #if vcpu == 0 or vmem == 0 or vdisk == 0:
-        if not all([vcpu,vmem,vdisk]):
+        if not all([vcpu,vmem,vdisk,lenth]):
             return result
         else:
             real_mem = int(real_mem/1024)
@@ -141,7 +141,7 @@ def main():
                 count,infomations = plg_info.cal_data()
                 print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
             except:
-                print "the informations has wrong part, please check.."
+                print "api data has something wrong,or please check the plg is correct in config.yaml"
                 exit()
 
 if __name__ == '__main__':
