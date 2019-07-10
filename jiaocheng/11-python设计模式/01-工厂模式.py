@@ -35,7 +35,7 @@ def connect_factory(filepath):
     elif filepath.endswith('.json'):
         connector = JsonConnector(filepath)
     else:
-        raise ValueError('cannot connect to {}'.format(filename))
+        raise ValueError('cannot connect to {}'.format(filepath))
     return connector
 
 def connect_to(filepath):
@@ -57,7 +57,7 @@ def main():
         filepath = sys.argv[1]
     else:
         usage()
-        sys.exit(-1)
+        sys.exit()
 
     factory = connect_to(filepath)
     print(factory.datainfo)
