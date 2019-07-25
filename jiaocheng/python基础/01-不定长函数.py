@@ -17,17 +17,16 @@ def sum_nums(a,b,*args):
     return num1
 
 def print_num(a,b,c=33,*args,**kwargs): #默认参数，不定长函数的2种，元组和字典形式
-    print a
-    print b
-    print c
-    print args
-    print kwargs
-    print '='*30
+    print(a)
+    print(b)
+    print(c)
+    print(args)
+    print(kwargs)
 
 print_num(1,2,3,4,5,6,task=22,job=333)
 print_num(1,2,3,task=22,job=333)
 print_num(1,2,task=22,job=333)
 print_num(1,2,3,4,5)
 print_num(1,2)
-print sum_nums(1,2,3,4,5,6)
-print sum_nums(1,2,3)
+print(sum_nums(1,2,3,4,5,6))
+print(sum_nums(1,2,3))
