@@ -91,3 +91,4 @@ if __name__ == "__main__":
         one_day_result_list = handledata(one_day_ret)
         sev_day_result_list = handledata(sev_day_ret)
         print("instance_id:%s, one day: %s, 7 day: %s"%(instance_id,str(one_day_result_list),str(sev_day_result_list)))
+    g.close()
