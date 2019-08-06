@@ -12,6 +12,8 @@
 # here put the import lib
 
 from qingcloud.iaas import APIConnection
+from pathlib import Path
+import platform
 import yaml
 import datetime
 def removdoublelist(items):
@@ -70,7 +72,12 @@ def handledata(ret):
             disk_read_maxvalue, disk_read_avgvalue,
             disk_write_maxvalue, disk_write_avgvalue)
 if __name__ == "__main__":
-    with open('qingcloud.yaml') as f:
+    if platform.system() == 'Windows':
+        curdir = Path.cwd() / 'python/sometips'
+    elif platform.system() == 'Linux':
+        curdir = Path.cwd()
+
+    with open(curdir/'qingcloud.yaml') as f:
         configs = yaml.load(f.read())
 
     zone = configs.get('zone')
@@ -78,12 +85,13 @@ if __name__ == "__main__":
     secret_access_key = configs.get('secret_access_key')
     host = configs.get('host')
 
-    conn = APIConnection(access_key_id, secret_access_key,zone,host=host,port='7777',protocol='http')
+    #conn = APIConnection(access_key_id, secret_access_key, zone,  host=host, port='7777', protocol='http')
+    conn = APIConnection(access_key_id, secret_access_key, zone, host=host)
     nowtime = datetime.datetime.now()
     start_one_time = (nowtime + datetime.timedelta(days=-1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     start_sev_time = (nowtime + datetime.timedelta(days=-7)).strftime('%Y-%m-%dT%H:%M:%SZ')
     end_time = nowtime.strftime('%Y-%m-%dT%H:%M:%SZ')
-    g = open('instance_list.txt')
+    g = open(curdir/'instance_list.txt')
     for line in g.readlines():
         instance_id = line.strip()
         one_day_ret = conn.get_monitoring_data(instance_id ,['cpu','memory','disk-iops-os'],'5m', start_one_time, end_time)
