@@ -83,7 +83,7 @@ if __name__ == "__main__":
     start_one_time = (nowtime + datetime.timedelta(days=-1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     start_sev_time = (nowtime + datetime.timedelta(days=-7)).strftime('%Y-%m-%dT%H:%M:%SZ')
     end_time = nowtime.strftime('%Y-%m-%dT%H:%M:%SZ')
-    g = open('instance_list')
+    g = open('instance_list.txt')
     for line in g.readlines():
         instance_id = line.strip()
         one_day_ret = conn.get_monitoring_data(instance_id ,['cpu','memory','disk-iops-os'],'5m', start_one_time, end_time)
