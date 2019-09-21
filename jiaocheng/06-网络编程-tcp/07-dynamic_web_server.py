@@ -8,7 +8,7 @@
 # Description:
 
 """
-from socket import *
+from socket import socket,AF_INET,SOCK_STREAM
 from multiprocessing import Process
 import time
 import os
@@ -61,7 +61,7 @@ class HTTPserver(object):
 
         if request_file.endswith('.py'):
             env = {
-                'PATH_INFO': request_file
+                'PATH_INFO': request_file,
                 'METHOD': method
             } #这个应该是上面接收到数据带的参数，目前先传个空
             try:
