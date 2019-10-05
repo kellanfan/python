@@ -11,8 +11,34 @@
 
 # here put the import lib
 
+import psycopg2
 from lxml import etree
 from misc.openurl import OpenUrl
+class Mypostgres(object):
+    def __init__(self,database,user,password,host,port='5432'):
+        self.db=psycopg2.connect(database=database, user=user, password=password, host=host, port=port)
+        self.cursor=self.db.cursor()
+
+    def close(self):
+        self.cursor.close()
+        self.db.close()
+
+    def change_data(self, sql):
+        try:
+            self.cursor.execute(sql)
+            self.db.commit()
+            return 0
+        except Exception as e:
+            self.db.rollback()
+            return e
+
+    def select_data(self, sql):
+        try:
+            self.cursor.execute(sql)
+        except Exception as e:
+            return e
+        else:
+            return self.cursor.fetchall()
 
 def getMovieUrl(html):
     selecter = etree.HTML(html)
@@ -48,4 +74,16 @@ if __name__ == "__main__":
             tmp = getMovieInfo(url)
             if tmp:
                 info_list.append(tmp)
-        print(info_list)
+    postgresql = Mypostgres('spiderman','spiderman','Sun55kong','10.91.158.2')
+    select_cmd = 'select public_time from dian_ying_tian_tang order by public_time desc limit 1'
+    last_time = postgresql.select_data(select_cmd)[0][0].strip()
+    print(last_time)
+    for info in info_list:
+        if info['public_time'] > last_time:
+            cmd = "insert into dian_ying_tian_tang(name,public_time,downlink) values ('%s', '%s', '%s')"%(info['name'],info['public_time'],info['downlink'])
+            res = postgresql.change_data(cmd)
+            if res == 0:
+                print("insert [%s] ok.."%info['name'])
+            else:
+                print(res)
+    postgresql.close()
