@@ -10,13 +10,17 @@
 '''
 
 # here put the import lib
-
+import json
+import etcd
 import psycopg2
 from lxml import etree
 from misc.openurl import OpenUrl
 class Mypostgres(object):
-    def __init__(self,database,user,password,host,port='5432'):
-        self.db=psycopg2.connect(database=database, user=user, password=password, host=host, port=port)
+    def __init__(self):
+        etc_client = etcd.Client(host='10.91.158.2', port=2379)
+        etc_result = etc_client.read('/project/spiderman/postgres')
+        postgresql_info = json.loads(etc_result.value)
+        self.db=psycopg2.connect(database=postgresql_info['database'], user=postgresql_info['user'], password=postgresql_info['password'], host=postgresql_info['host'], port=postgresql_info['port'])
         self.cursor=self.db.cursor()
 
     def close(self):
@@ -74,10 +78,9 @@ if __name__ == "__main__":
             tmp = getMovieInfo(url)
             if tmp:
                 info_list.append(tmp)
-    postgresql = Mypostgres('spiderman','spiderman','Sun55kong','10.91.158.2')
+    postgresql = Mypostgres()
     select_cmd = 'select public_time from dian_ying_tian_tang order by public_time desc limit 1'
     last_time = postgresql.select_data(select_cmd)[0][0].strip()
-    print(last_time)
     for info in info_list:
         if info['public_time'] > last_time:
             cmd = "insert into dian_ying_tian_tang(name,public_time,downlink) values ('%s', '%s', '%s')"%(info['name'],info['public_time'],info['downlink'])

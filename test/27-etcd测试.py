@@ -10,9 +10,11 @@
 '''
 
 # here put the import lib
-
+import json
 import etcd
-client = etcd.Client(host='192.168.10.10', port=4001)
-client.write('/testkey', 'aaa')
-result = client.read('/testkey')
-print(result.value)
+client = etcd.Client(host='10.91.158.2', port=2379)
+# data = json.dumps(data)
+# client.write('/project/spiderman/postgres', data)
+result = client.read('/project/spiderman/postgres')
+a = json.loads(result.value)
+print(a['host'])
