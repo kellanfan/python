@@ -6,16 +6,29 @@
 @Author  :   Kellan Fan 
 @Version :   1.0
 @Contact :   kellanfan1989@gmail.com
-@Desc    :   None
+@Desc    :   斗地主提示器
 '''
 
 # here put the import lib
-
+import pandas as pd
 class Poker(object):
     def __init__(self):
-        self.one_row = [2,1,'K','Q','J',10,9,8,7,6,5,4,3]
-        self.all = self.one_row*4
+        init_dict = {}
+        for i in range(1,11):
+            init_dict[i] = 4
+        init_dict['J'] = 4
+        init_dict['Q'] = 4
+        init_dict['K'] = 4
+        init_dict['小王'] = 1
+        init_dict['大王'] = 1
+        self.plant = init_dict
+    def show(self):
+        data = pd.DataFrame.from_dict(self.plant,orient='index').T
+        data.index = ['count']
+        print(data)
+        
+
 
 if __name__ == '__main__':
     p = Poker()
-    print(p.all)
+    p.show()
