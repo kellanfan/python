@@ -33,7 +33,7 @@ def noetcdlocker():
     print(time.ctime())
 
 if __name__ == '__main__':
-    client = etcd.Client(host='192.168.10.10',port=4001)
+    client = etcd.Client(host='10.91.158.2',port=2379)
     for i in range(5):
         t = Thread(target=etcdlocker)
         t.start()
