@@ -69,8 +69,8 @@ class OpenUrl(object):
             response = requests.get(self.__url, headers=self.__headers)
             response.encoding = self.__encode
             return response.status_code, response.text
-        except:
-            return 400, None
+        except Exception as e:
+            return 400, e
 
 if __name__ == '__main__':
     url = input("请输入url：")

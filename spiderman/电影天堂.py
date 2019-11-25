@@ -64,20 +64,25 @@ def getMovieInfo(url):
             info['public_time'] = selecter.xpath("//div[@class='co_content8']/ul/text()")[0].strip().split('：')[1]
             info['downlink'] = selecter.xpath("//tbody/tr/td/a/text()")[0]
             return info
-        except:
-            return None
+        except Exception as e:
+            raise e
+    else:
+        return html
 
 if __name__ == "__main__":
     start_url='https://www.dytt8.net/'
     ourl = OpenUrl(start_url)
     code,html = ourl.openurl()
+    info_list = []
     if code == 200:
-        info_list = []
         movie_list = getMovieUrl(html)
         for url in movie_list:
             tmp = getMovieInfo(url)
             if tmp:
                 info_list.append(tmp)
+    else:
+        print(html)
+        exit()
     postgresql = Mypostgres()
     select_cmd = 'select public_time from dian_ying_tian_tang order by public_time desc limit 1'
     last_time = postgresql.select_data(select_cmd)[0][0].strip()
