@@ -51,7 +51,10 @@ class HyperData(object):
                 print "\033[0;31m%s status is %s!!! Maybe broken, please check!!! \033[0m" %(host_machine, status)
                 continue
             try:
-                place_group_ids = hypernode['place_group_ids'][0]
+                if hypernode.has_key('place_group_id_bak'):
+                    place_group_ids = hypernode['place_group_id_bak']
+                else:
+                    place_group_ids = hypernode['place_group_ids'][0]
             except:
                 print "%s info cannot get!!!" %host_machine
                 continue
@@ -67,13 +70,13 @@ class HyperData(object):
                 used_vmem += hypernode['used_memory']
                 used_vdisk += hypernode['virtual_disk']
                 per_cpu += (100 - hypernode['cpu_idle'])
-                per_mem += int((1 - float(hypernode['real_free_memory'])/ float(hypernode['real_total_memory']))*100)
-                per_disk += int((float(hypernode['used_disk']) / float(real_disk))*100)
+                per_mem += (1 - float(hypernode['real_free_memory'])/ float(hypernode['real_total_memory']))*100
+                per_disk += (float(hypernode['used_disk']) / float(real_disk))*100
 
         result = []
         lenth = len(self.__hyper_list)
         #if vcpu == 0 or vmem == 0 or vdisk == 0:
-        if not all([vcpu,vmem,vdisk,lenth]):
+        if not all([vcpu,vmem,vdisk]):
             return result
         else:
             real_mem = int(real_mem/1024)
@@ -85,19 +88,19 @@ class HyperData(object):
             free_vcpu = vcpu - used_vcpu
             free_vmem = vmem - used_vmem
             free_vdisk = vdisk - used_vdisk
-            per_cpu = int(float(per_cpu) / float(lenth))
-            per_mem = int(float(per_mem) / float(lenth))
-            per_disk = int(float(per_disk) / float(lenth))
-            per_vcpu = int((float(used_vcpu)/float(vcpu))*100)
-            per_vmem = int((float(used_vmem)/float(vmem))*100)
-            per_vdisk = int((float(used_vdisk)/float(vdisk))*100)
-            
+            per_cpu = float(per_cpu) / float(lenth)
+            per_mem = float(per_mem) / float(lenth)
+            per_disk = float(per_disk) / float(lenth)
+            per_vcpu = (float(used_vcpu)/float(vcpu))*100
+            per_vmem = (float(used_vmem)/float(vmem))*100
+            per_vdisk = (float(used_vdisk)/float(vdisk))*100
+           
             result.append(str(real_cpu) + 'C')
             result.append(str(real_mem) + 'G')
             result.append(str(real_disk) + 'T')
-            result.append(per_cpu)
-            result.append(per_mem)
-            result.append(per_disk)
+            result.append('{:.2f}'.format(per_cpu))
+            result.append('{:.2f}'.format(per_mem))
+            result.append('{:.2f}'.format(per_disk))
             result.append(str(vcpu) + 'C')
             result.append(str(vmem) + 'G')
             result.append(str(vdisk) + 'T')
@@ -107,9 +110,9 @@ class HyperData(object):
             result.append(str(free_vcpu) + 'C')
             result.append(str(free_vmem) + 'G')
             result.append(str(free_vdisk) + 'T') 
-            result.append(int(per_vcpu))
-            result.append(int(per_vmem))
-            result.append(int(per_vdisk))
+            result.append('{:.2f}'.format(per_vcpu))
+            result.append('{:.2f}'.format(per_vmem))
+            result.append('{:.2f}'.format(per_vdisk))
             return lenth,result
 
 def main():
