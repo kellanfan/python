@@ -16,14 +16,6 @@ from pathlib import Path
 import platform
 import yaml
 import datetime
-def removdoublelist(items):
-    """
-        去掉数据中是list的元素
-    """
-    for item in items:
-        if isinstance(item,list):
-            items.remove(item)
-    return items
 
 def handledata(ret):
     """
@@ -41,28 +33,30 @@ def handledata(ret):
         for items in ret['meter_set']:
             if not items['data']:
                 continue
-            data_list= removdoublelist(items['data'])
+            data_list = [x[1] if isinstance(x,list) else x for x in items['data']]
             if items['meter_id'] == 'cpu':
                 try:
                     cpu_maxvalue = max(data_list)/10
-                    cpu_avgvalue = sum(data_list)/len(data_list)/10
+                    cpu_avgvalue = '{:.2f}'.format(sum(data_list)/len(data_list)/10)
                 except:
                     pass
             elif items['meter_id'] == 'memory':
                 try:
                     mem_maxvalue = max(data_list)/10
-                    mem_avgvalue = sum(data_list)/len(data_list)/10
+                    mem_avgvalue = '{:.2f}'.format(sum(data_list)/len(data_list)/10)
                 except:
                     pass
 
             elif items['meter_id'] == 'disk-iops-os':
+                data_list = [x[1] if isinstance(x[1],list) else x for x in items['data']]
                 try:
-                    disk_read = removdoublelist([x[0] for x in data_list])
+                    disk_read = [x[0] for x in data_list]
                     disk_read_maxvalue = max(disk_read)
-                    disk_read_avgvalue = sum(disk_read)/len(disk_read)
-                    disk_write = removdoublelist([x[1] for x in data_list])
+                    disk_read_avgvalue = '{:.2f}'.format(sum(disk_read)/len(disk_read))
+                    disk_write_org = [x[1] for x in data_list]
+                    disk_write = [x[1] if isinstance(x,list) else x for x in disk_write_org]
                     disk_write_maxvalue = max(disk_write)
-                    disk_write_avgvalue = sum(disk_write)/len(disk_write)
+                    disk_write_avgvalue = '{:.2f}'.format(sum(disk_write)/len(disk_write))
                 except:
                     pass
             else:
@@ -91,12 +85,24 @@ if __name__ == "__main__":
     start_one_time = (nowtime + datetime.timedelta(days=-1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     start_sev_time = (nowtime + datetime.timedelta(days=-7)).strftime('%Y-%m-%dT%H:%M:%SZ')
     end_time = nowtime.strftime('%Y-%m-%dT%H:%M:%SZ')
-    g = open(curdir/'instance_list.txt')
-    for line in g.readlines():
-        instance_id = line.strip()
-        one_day_ret = conn.get_monitoring_data(instance_id ,['cpu','memory','disk-iops-os'],'5m', start_one_time, end_time)
-        sev_day_ret = conn.get_monitoring_data(instance_id ,['cpu','memory','disk-iops-os'],'5m', start_sev_time, end_time)
-        one_day_result_list = handledata(one_day_ret)
-        sev_day_result_list = handledata(sev_day_ret)
-        print("instance_id:%s, one day: %s, 7 day: %s"%(instance_id,str(one_day_result_list),str(sev_day_result_list)))
-    g.close()
+    with open(curdir/'instance_list.txt') as f:
+        for line in g.readlines():
+            instance_id = line.strip()
+            one_day_ret = conn.get_monitoring_data(instance_id ,['cpu','memory','disk-iops-os'],'5m', start_one_time, end_time)
+            sev_day_ret = conn.get_monitoring_data(instance_id ,['cpu','memory','disk-iops-os'],'5m', start_sev_time, end_time)
+            one_day_result_list = handledata(one_day_ret)
+            sev_day_result_list = handledata(sev_day_ret)
+            print('''instance_id: {}
+    one_day_info:
+         cpu_maxvalue: {}
+         cpu_avgvalue: {}
+         mem_maxvalue: {}
+         mem_avgvalue: {}
+         disk_read_maxvalue: {}
+         disk_read_avgvalue: {}
+         disk_write_maxvalue: {}
+         disk_write_avgvalue: {}\n'''.format(
+         instance_id,one_day_result_list[0],one_day_result_list[1],
+         one_day_result_list[2],one_day_result_list[3],
+         one_day_result_list[4],one_day_result_list[5],
+         one_day_result_list[6],one_day_result_list[7]))
