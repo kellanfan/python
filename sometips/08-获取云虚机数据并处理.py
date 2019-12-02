@@ -106,3 +106,17 @@ if __name__ == "__main__":
          one_day_result_list[2],one_day_result_list[3],
          one_day_result_list[4],one_day_result_list[5],
          one_day_result_list[6],one_day_result_list[7]))
+            print('''
+    sev_day_info:
+         cpu_maxvalue: {}
+         cpu_avgvalue: {}
+         mem_maxvalue: {}
+         mem_avgvalue: {}
+         disk_read_maxvalue: {}
+         disk_read_avgvalue: {}
+         disk_write_maxvalue: {}
+         disk_write_avgvalue: {}\n'''.format(
+         sev_day_result_list[0],sev_day_result_list[1],
+         sev_day_result_list[2],sev_day_result_list[3],
+         sev_day_result_list[4],sev_day_result_list[5],
+         sev_day_result_list[6],sev_day_result_list[7]))
