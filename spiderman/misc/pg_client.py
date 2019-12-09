@@ -13,10 +13,11 @@
 import json
 import etcd
 import psycopg2
+from logger import logger
 
 class Mypostgres(object):
     def __init__(self):
-        etc_client = etcd.Client(host='10.91.158.2', port=2379)
+        etc_client = etcd.Client(host='192.168.1.2', port=2379)
         etc_result = etc_client.read('/project/spiderman/postgres')
         postgresql_info = json.loads(etc_result.value)
         self.db=psycopg2.connect(database=postgresql_info['database'], user=postgresql_info['user'], password=postgresql_info['password'], host=postgresql_info['host'], port=postgresql_info['port'])
@@ -33,12 +34,14 @@ class Mypostgres(object):
             return 0
         except Exception as e:
             self.db.rollback()
+            logger.error(e)
             return e
 
     def select_data(self, sql):
         try:
             self.cursor.execute(sql)
         except Exception as e:
+            logger.error(e)
             return e
         else:
             return self.cursor.fetchall()
