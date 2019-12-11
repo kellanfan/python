@@ -63,7 +63,7 @@ class OpenUrl(object):
         self.__session = requests.Session()
         self.__cookie = None
 
-    def openurl(self):
+    def run(self):
         try:
             requests.adapters.DEFAULT_RETRIES = 10
             response = requests.get(self.__url, headers=self.__headers)
@@ -83,4 +83,4 @@ if __name__ == '__main__':
         else:
             print("傻逼么？不是告诉你了么？！")
             sys.exit(1)
-    print(ourl.openurl()[1])
+    print(ourl.run()[1])

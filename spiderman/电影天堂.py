@@ -15,34 +15,7 @@ import etcd
 import psycopg2
 from lxml import etree
 from misc.openurl import OpenUrl
-class Mypostgres(object):
-    def __init__(self):
-        etc_client = etcd.Client(host='10.91.158.2', port=2379)
-        etc_result = etc_client.read('/project/spiderman/postgres')
-        postgresql_info = json.loads(etc_result.value)
-        self.db=psycopg2.connect(database=postgresql_info['database'], user=postgresql_info['user'], password=postgresql_info['password'], host=postgresql_info['host'], port=postgresql_info['port'])
-        self.cursor=self.db.cursor()
-
-    def close(self):
-        self.cursor.close()
-        self.db.close()
-
-    def change_data(self, sql):
-        try:
-            self.cursor.execute(sql)
-            self.db.commit()
-            return 0
-        except Exception as e:
-            self.db.rollback()
-            return e
-
-    def select_data(self, sql):
-        try:
-            self.cursor.execute(sql)
-        except Exception as e:
-            return e
-        else:
-            return self.cursor.fetchall()
+from misc.pg_client import Mypostgres
 
 def getMovieUrl(html):
     selecter = etree.HTML(html)
@@ -55,7 +28,7 @@ def getMovieUrl(html):
 def getMovieInfo(url):
     full_url = 'https://www.dytt8.net/' + url
     ourl = OpenUrl(full_url,'gb2312')
-    code,html = ourl.openurl()
+    code,html = ourl.run()
     info = {}
     if code==200:
         selecter = etree.HTML(html)
@@ -71,8 +44,8 @@ def getMovieInfo(url):
 
 if __name__ == "__main__":
     start_url='https://www.dytt8.net/'
-    ourl = OpenUrl(start_url)
-    code,html = ourl.openurl()
+    ourl = OpenUrl(start_url + 'index0.html',)
+    code,html = ourl.run()
     info_list = []
     if code == 200:
         movie_list = getMovieUrl(html)
