@@ -12,27 +12,26 @@ import os, sys, time
 import redis
 from lxml import etree
 from misc.openurl import OpenUrl
-from misc import mysql_connect
-from misc.logger import Logger
+from misc import pg_client
 
 class Hanfan(object):
     def __init__(self):
         self.__redis_link = self.__redis_connect()
-        mylog = Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
-        self.__logger = mylog.outputLog()
-        self.mysql_connect = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'misc/mysql_data.yaml'))
-        self.main_url = 'http://www.hanfan.cc/'
+        #mylog = Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
+        #self.__logger = mylog.outputLog()
+        self.pg_connect = pg_client.Mypostgres()
+        self.main_url = 'https://www.hanfan.cc/'
 
     def __redis_connect(self):
-        pool = redis.ConnectionPool(host='127.0.0.1',port=6379)
+        pool = redis.ConnectionPool(host='192.168.1.7',port=6379)
         return redis.Redis(connection_pool=pool)
     
     def get_url(self, ftype):
         ourl = OpenUrl(self.main_url + ftype)
-        code,main_content = ourl.openurl()
+        code,main_content = ourl.run()
         if code == 200:
             selecter = etree.HTML(main_content)
-            pages = int(selecter.xpath('/html/body/section/div/div/div[3]/ul/li[8]/span/text()')[0].split(' ')[1])
+            pages = int(selecter.xpath('/html/body/section/div[1]/div/div[2]/ul/li[8]/span/text()')[0].split(' ')[1])
         else:
             print("bad url: %s" %self.main_url)
             sys.exit()
@@ -40,7 +39,7 @@ class Hanfan(object):
         for page in range(1,pages):
             page_url = self.main_url + ftype + '/page/%s/'%page
             sub_ourl = OpenUrl(page_url)
-            sub_code,sub_content = sub_ourl.openurl()
+            sub_code,sub_content = sub_ourl.run()
             if sub_code == 200:
                 selecter = etree.HTML(sub_content)
                 selecter_list = selecter.xpath('//article/header/h2/a')
@@ -49,7 +48,7 @@ class Hanfan(object):
                     sub_url = link.attrib['href'] + '#prettyPhoto/0/'
                     self.__redis_link.set(name, sub_url, ex=21600)
             else:
-                self.__logger.error('[%s] can not open...'%page_url)
+                #self.__logger.error('[%s] can not open...'%page_url)
                 continue
 
             time.sleep(1)
@@ -59,7 +58,7 @@ class Hanfan(object):
         for fkey in redis_keys:
             url = self.__redis_link.get(fkey)
             ourl = OpenUrl(url)
-            code,content = ourl.openurl()
+            code,content = ourl.run()
             if code == 200:
                 selecter = etree.HTML(content)
                 try:
@@ -71,28 +70,28 @@ class Hanfan(object):
                         cloudpan_url = '|'.join(cloudpan_url)
                         cloudpan_pass = '|'.join(selecter.xpath('//div[@class="part"]/text()')[2:4])
                     else:
-                        self.__logger.error('[%s] donot has cloudpan download link...'%fkey.decode())
+                        #self.__logger.error('[%s] donot has cloudpan download link...'%fkey.decode())
                         continue
                 except:
-                    self.__logger.error('[%s] miss something..'%fkey.decode())
+                    #self.__logger.error('[%s] miss something..'%fkey.decode())
                     continue
-                self.send_mysql(fkey, cloudpan_url, cloudpan_pass)
+                self.send_pg(fkey, cloudpan_url, cloudpan_pass)
             else:
-                self.__logger.error('[%s] can not open the download page..'%fkey.decode())
+                #self.__logger.error('[%s] can not open the download page..'%fkey.decode())
                 continue
             time.sleep(0.5)
 
-    def send_mysql(self, name, cloudpan_url, cloudpan_pass):
-        '''将数据写入数据库'''
-        sql = "insert into hanfan(name, url, panpass) value ('%s', '%s', '%s')" %(name.decode(),cloudpan_url,cloudpan_pass)
-        code = self.mysql_connect.change_data(sql)
-        if code == 0:
-            self.__logger.info('[%s] ok'%name.decode())
+    def send_pg(self, fkey, cloudpan_url, cloudpan_pass):
+        sql = "insert into hanfan(name,url,panpass) values ('{}', '{}', '{}')".format(fkey.decode('utf-8'), cloudpan_url, cloudpan_pass)
+        ret = self.pg_connect.change_data(sql)
+        if ret == 0:
+            print('insert [{}] ok...'.format(fkey))
         else:
-            self.__logger.error('[%s] error,message: [%s]'%(name.decode(), code))
-
+            print(ret)
+            sys.exit()
 if __name__ == '__main__':
     a = Hanfan()
     for i in ['variety', 'movie', 'hanju']:
         a.get_url(i)
     a.get_download_url()
+
