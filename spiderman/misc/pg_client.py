@@ -13,7 +13,7 @@
 import json
 import etcd
 import psycopg2
-from logger import logger
+#from log.logger import logger
 
 class Mypostgres(object):
     def __init__(self):
@@ -34,14 +34,14 @@ class Mypostgres(object):
             return 0
         except Exception as e:
             self.db.rollback()
-            logger.error(e)
+            #logger.error(e)
             return e
 
     def select_data(self, sql):
         try:
             self.cursor.execute(sql)
         except Exception as e:
-            logger.error(e)
+            #logger.error(e)
             return e
         else:
             return self.cursor.fetchall()

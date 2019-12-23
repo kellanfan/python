@@ -13,6 +13,7 @@
 import json
 import etcd
 import psycopg2
+import time
 from lxml import etree
 from misc.openurl import OpenUrl
 from misc.pg_client import Mypostgres
@@ -51,6 +52,7 @@ if __name__ == "__main__":
         movie_list = getMovieUrl(html)
         for url in movie_list:
             tmp = getMovieInfo(url)
+            time.sleep(1)
             if tmp:
                 info_list.append(tmp)
     else:
