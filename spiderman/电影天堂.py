@@ -11,8 +11,6 @@
 
 # here put the import lib
 import json
-import etcd
-import psycopg2
 import time
 from lxml import etree
 from misc.openurl import OpenUrl
