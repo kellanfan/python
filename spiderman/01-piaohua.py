@@ -14,16 +14,14 @@ import operator
 import redis
 import argparse
 from lxml import etree
-from misc import openurl
-from misc import logger
-from misc import mysql_connect
+from misc.openurl import OpenUrl
+from misc.pg_client import Mypostgres
 
 class PiaohuaSpider(object):
     '''
         通过url获取需要的数据
     '''
-    def __init__(self, url, logger):
-        self.logger = logger #必须在self.html前面定义
+    def __init__(self, url):
         self.html = self.gethtml(url)
         if self.html:
             self.selector = etree.HTML(self.html)
@@ -39,12 +37,12 @@ class PiaohuaSpider(object):
            获取html文件
            返回url的列表
         '''
-        ob_openurl = openurl.OpenUrl(url)
-        code, html = ob_openurl.openurl()
+        ob_openurl = OpenUrl(url)
+        code, html = ob_openurl.run()
         if code == 200:
             return html
         else:
-            self.logger.error('open [%s] failed..'%url)
+            print('open [{}] failed..'.format(url))
 
     def get_pages(self):
         '''
@@ -113,38 +111,35 @@ class PiaohuaSpider(object):
         else:
             return seg.join(l)
 
-def send_mysql(name,ftype, public_time, down_url, connect, logger):
+def send_pg(name, ftype, public_time, down_url, connect):
     '''将数据写入数据库'''
-    sql = "insert into piaohua(name, content, type, updatetime) value ('%s', '%s', '%s', '%s')"%(name,down_url,ftype,public_time)
+    sql = "insert into piaohua(name, content, type, updatetime) values ('%s', '%s', '%s', '%s')"%(name,down_url,ftype,public_time)
     code = connect.change_data(sql)
     if code == 0:
-        logger.info('[%s] ok'%name)
+        print('[{}] ok'.format(name))
     else:
-        logger.error('[%s] error,message: [%s]'%(name, code))
+        print('[{}] error,message: [{}]'.format(name, code))
 
 
 def main(args):
     '''
         主函数，调度器
     '''
-    #创建logger及redis、mysql连接
-    mylog = logger.Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
-    mylogger = mylog.outputLog()
-    redis_pool = redis.ConnectionPool(host='127.0.0.1',port=6379)
+    redis_pool = redis.ConnectionPool(host='192.168.1.2',port=6379)
     redis_conn = redis.Redis(connection_pool=redis_pool)
-    mysql_conn = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'misc/mysql_data.yaml'))
+    pg_conn = Mypostgres()
 
     ftype_list = ['xiju', 'dongzuo', 'aiqing', 'kehuan', 
                   'juqing', 'xuannian', 'zhanzheng', 'kongbu',
                   'zainan', 'dongman']
     #将获取到的电影url存入到redis中
     for ftype in ftype_list:
-        url = 'https://www.piaohua.com/html/%s/' %ftype
+        url = 'https://www.piaohua.com/html/{}/'.format(ftype)
         pri = 1
-        pages = PiaohuaSpider(url, mylogger).pages
+        pages = PiaohuaSpider(url).pages
         for page in range(1,int(pages)):
             page_list_url = url + 'list_' + str(page) + '.html'
-            piaohua = PiaohuaSpider(page_list_url, mylogger)
+            piaohua = PiaohuaSpider(page_list_url)
             if not piaohua.html:
                 continue
             for page_u in piaohua.page_url:
@@ -153,20 +148,21 @@ def main(args):
             time.sleep(0.5)
     time.sleep(5)
     #从redis中获取url，获取数据，并写入数据库
+    if args.update:
+        current_updatetime = pg_conn.select_data('select updatetime from piaohua order by updatetime desc limit by 1')
+    elif args.all:
+        current_updatetime = '2000-01-01'
     for fkey in ftype_list:
-        if args.update:
-            current_updatetime = mysql_conn.select_data('select updatetime from piaohua order by updatetime desc limit by 1')
-        elif args.all:
-            current_updatetime = '2000-01-01'
-
         for value in redis_conn.zrange(fkey,0,-1):
-            moive = PiaohuaSpider('https://www.piaohua.com' + value.decode('utf-8'), mylogger)
+            moive = PiaohuaSpider('https://www.piaohua.com' + value.decode('utf-8'))
+            print('get [{}]'.format(moive.moivename))
             if not moive.html or not moive.down_url:
+                print('get [{}] failed'.format(moive.moivename))
                 continue
             public_time = moive.public_time
             if operator.gt(current_updatetime, public_time):
                 break
-            send_mysql(moive.moivename, fkey, moive.public_time, moive.down_url, mysql_conn, mylogger)
+            send_pg(moive.moivename, fkey, moive.public_time, moive.down_url, pg_conn)
             time.sleep(0.5)
 
 if __name__ == '__main__':

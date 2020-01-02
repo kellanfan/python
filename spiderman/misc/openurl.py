@@ -11,6 +11,8 @@
 import sys
 import random
 import requests
+import urllib3
+
 
 class MyUserAgent(object):
     def __init__(self):
@@ -66,7 +68,8 @@ class OpenUrl(object):
     def run(self):
         try:
             requests.adapters.DEFAULT_RETRIES = 10
-            response = requests.get(self.__url, headers=self.__headers)
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            response = requests.get(self.__url, headers=self.__headers, verify=False)
             response.encoding = self.__encode
             return response.status_code, response.text
         except Exception as e:
