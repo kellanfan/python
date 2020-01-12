@@ -11,7 +11,21 @@
 
 # here put the import lib
 import random
-number = sorted(random.sample(list(range(1,34)), 6))
-blue = random.randint(1,17)
-number.append(blue)
-print(number)
+from collections import Counter
+
+red = []
+for _ in range(0,1000):
+    red += sorted(random.sample(list(range(1,34)), 6))
+red_num_counts = Counter(red)
+true_red = []
+for item in red_num_counts.most_common(6):
+    true_red.append(item[0])
+
+
+blue = []
+for _ in range(0,1000):
+    blue.append(random.randint(1,17))
+blue_num_counts = Counter(blue)
+true_blue = blue_num_counts.most_common(1)[0][0]
+
+print("{} {}".format(sorted(true_red), true_blue))
