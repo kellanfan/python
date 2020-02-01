@@ -36,6 +36,8 @@ class Mypostgres(object):
             self.db.rollback()
             #logger.error(e)
             return e
+        finally:
+            self.close()
 
     def select_data(self, sql):
         try:
@@ -45,6 +47,10 @@ class Mypostgres(object):
             return e
         else:
             return self.cursor.fetchall()
+        finally:
+            self.close()
+
+
 if __name__ == "__main__":
     postgresql = Mypostgres()
     select_cmd = 'select public_time from dian_ying_tian_tang order by public_time desc limit 1'

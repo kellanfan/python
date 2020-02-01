@@ -70,4 +70,3 @@ if __name__ == "__main__":
                 print("insert [%s] ok.."%info['name'])
             else:
                 print(res)
-    postgresql.close()

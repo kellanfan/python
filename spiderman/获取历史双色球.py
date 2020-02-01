@@ -37,4 +37,3 @@ if code == 200:
                     print("insert [{}] ok..".format(issue_num))
                 else:
                     print(ret)
-pg_conn.close()
