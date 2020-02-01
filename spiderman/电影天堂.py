@@ -20,8 +20,11 @@ def getMovieUrl(html):
     selecter = etree.HTML(html)
     movie_url = selecter.xpath("//div[@class='bd3']/div[@class='bd3r'][1]/div/div[@class='bd3rl']/div[@class='co_area2'][1]//a/@href")
     movie_url = set(movie_url)
-    movie_url.remove('/app.html')
-    movie_url.remove('/html/gndy/dyzz/index.html')    
+    try:
+        movie_url.remove('/app.html')
+        movie_url.remove('/html/gndy/dyzz/index.html')
+    except:
+        print('[{}] donnot has "app.html" or "index.html"'.format(movie_url))
     return movie_url
 
 def getMovieInfo(url):
@@ -43,7 +46,7 @@ def getMovieInfo(url):
 
 if __name__ == "__main__":
     start_url='https://www.dytt8.net/'
-    ourl = OpenUrl(start_url + 'index0.html',)
+    ourl = OpenUrl(start_url + 'index.htm',)
     code,html = ourl.run()
     info_list = []
     if code == 200:
