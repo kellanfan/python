@@ -161,14 +161,14 @@ def main(args):
     #从redis中获取url，获取数据，并写入数据库
     for ftype in ftype_list:
         if args.update:
-            current_uri = pg_conn.execute('select uri from piaohua order by uri desc limit 1')[0][0]
+            current_uri = pg_conn.execute("select uri from piaohua where type = '{}' order by uri desc limit 1".format(ftype))[0][0]
         elif args.all:
             current_uri= '/html/{}/2000/0101/00000.html'.format(ftype)
         print('Handling the [{}] type...'.format(ftype))
         logger.info('Handling the [{}] type...'.format(ftype))
         for value in redis_conn.sort(ftype,alpha=True,desc=True):
             value = value.decode('utf-8')
-            if operator.gt(current_uri, value):
+            if operator.ge(current_uri, value):
                 print('the uri [{}] is timeout!'.format(value))
                 logger.info('the uri [{}] is timeout!'.format(value))
                 break
