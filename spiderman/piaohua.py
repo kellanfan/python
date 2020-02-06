@@ -142,8 +142,9 @@ def main(args):
     for ftype in ftype_list:
         try:
             cur_redis_uri = redis_conn.sort(ftype,alpha=True,desc=True)[0]
+            cur_redis_uri = cur_redis_uri.decode('utf-8')
         except Exception as e:
-            logger.error('redis dones not has the type [{}] keys'.format(ftype))
+            logger.error('redis dones not has the type [{}] keys,will get all'.format(ftype))
             cur_redis_uri = '/html/{}/2000/0101/00000.html'.format(ftype)
         logger.info('the type [{0}], cur_redis_utl is [{1}]'.format(ftype, cur_redis_uri))
         url = 'https://www.piaohua.com/html/{}/'.format(ftype)
@@ -153,7 +154,7 @@ def main(args):
             piaohua = PiaohuaSpider(page_list_url)
             if not piaohua.html:
                 continue
-            if operator.ge(cur_redis_uri.decode('utf-8'), piaohua.page_url[0]):
+            if operator.ge(cur_redis_uri, piaohua.page_url[0]):
                 break
             for page_u in piaohua.page_url:
                 try:
