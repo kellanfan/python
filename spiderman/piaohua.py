@@ -1,120 +1,195 @@
-#/usr/bin/env python
 #coding=utf8
 """
 # Author: kellanfan
-# Created Time : Sat 05 May 2018 09:57:24 AM CST
+# Created Time : Sun 07 Apr 2019 01:52:30 PM CST
 
-# File Name: piaohua.py
-# Description: 爬取飘花网的电影资源
+# File Name: 01-piaohua.py
+# Description:
 
 """
 import os
 import re
 import time
-import sys
+import operator
 import redis
-#发现re确实不好处理一些特殊的html，改动bs4
-from bs4 import BeautifulSoup
+import argparse
 from lxml import etree
-from misc import mysql_connect
-from misc import openurl
-from misc.logger import Logger
+from misc.openurl import OpenUrl
+from misc.pg_client import Mypostgres
+from log.logger import logger
+class PiaohuaSpider(object):
+    '''
+        通过url获取需要的数据
+    '''
+    def __init__(self, url):
+        self.html = self.gethtml(url)
+        if self.html:
+            self.selector = etree.HTML(self.html)
+            self.pages = self.get_pages()
+            self.updatetime = self.get_updatetime()
+            self.moivename = self.get_name()
+            self.page_url = self.get_one_page_url()
+            self.down_url = self.get_down_url()
+            self.public_time = self.get_moive_public()
 
-class Piaohua(object):
-    def __init__(self,ftype):
-        self.__ftype = ftype
-        self.__redis_link = self.__redis_connect()
-        mylog = Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
-        self.__logger = mylog.outputLog()
-
-    def __redis_connect(self):
-        pool = redis.ConnectionPool(host='127.0.0.1',port=6379)
-        return redis.Redis(connection_pool=pool)
-
-    def get_url(self):
-        main_url = 'https://www.piaohua.com/html/%s/index.html' %self.__ftype
-        ourl = openurl.OpenUrl(main_url)
-        code,main_content = ourl.openurl()
-        if code ==  200:
-            #soup = BeautifulSoup(main_content, 'lxml')
-            #b = soup.find_all(text=re.compile("共(\d+)页"))[0]
-            #pages = re.sub('\D', "", str(b.split('页')[0]))
-            selecter = etree.HTML(main_content)
-            pages = int(selecter.xpath('//li[@class="end"]/a')[0].attrib['href'].split("_")[1].split('.')[0])
+    def gethtml(self, url):
+        '''
+           获取html文件
+           返回url的列表
+        '''
+        ob_openurl = OpenUrl(url)
+        code, html = ob_openurl.run()
+        if code == 200:
+            return html
         else:
-            print("bad url: %s" %main_url)
-            sys.exit(-1)
-        redis_id = 0
+            print('open [{}] failed..'.format(url))
+
+    def get_pages(self):
+        '''
+           获取到该类型的总页数
+           返回 数字类型的总页数
+        '''
+        p = re.compile(r'共(\d+)页')
+        temp = p.search(self.html)
+        if temp:
+            return int(temp.group(1))
+
+    def get_updatetime(self):
+        '''
+           获取本页中最后一项的更新时间
+           返回月日的字符串
+        '''
+        p = re.compile(r'(\d+-\d+)')
+        temp = self.selector.xpath("//div[@class='txt']/span/text()")
+        if temp:
+            string = p.search(temp[-1].strip())
+            if string:
+                return string.group()
+
+    def get_one_page_url(self):
+        '''
+           获取本页中电影主页的url列表
+           返回url列表
+        '''
+        temp = self.selector.xpath("//div[@class='txt']/h3/a/@href")
+        if temp:
+            return temp
+
+    def get_name(self):
+        '''
+           获取电影名称
+           返回电影名称的字符串
+        '''
+        name = self.selector.xpath("//div[@class='info']/span[1]/text()")
+        if name:
+            return name[0].split('：')[-1]
+
+    def get_moive_public(self):
+        '''
+            获取电影发布时间
+        '''
+        public = self.selector.xpath("//div[@class='info']/span[2]/text()")
+        if public:
+            return public[0].split('：')[-1]
+
+    def get_down_url(self):
+        '''
+           获取下载地址，只获取magnet和ftp类型的地址
+           返回一个字符串，如果是多个url地址，那么使用#做分割
+        '''
+        l = []
+        seg = '###'
+        for item in self.selector.xpath("//a/text()"):
+            item = item.strip()
+            if item.startswith('magnet') or item.startswith('ftp'):
+                l.append(item)
+        lenth = len(l)
+        if lenth == 0:
+            return None
+        elif lenth == 1:
+            return l[0]
+        else:
+            return seg.join(l)
+
+def send_pg(para, connect):
+    '''将数据写入数据库'''
+    sql = "insert into piaohua(name, type, updatetime, content, uri) values (%s, %s, %s, %s, %s)"
+    code = connect.execute(sql,para)
+    if code:
+        print('insert [{}] ok'.format(para))
+        logger.info('insert [{}] ok'.format(para))
+    else:
+        print('insert [{}] error,message: [{}]'.format(para, code))
+        logger.error('insert [{}] error,message: [{}]'.format(para, code))
+
+def main(args):
+    '''
+        主函数，调度器
+    '''
+    try:
+        redis_pool = redis.ConnectionPool(host='192.168.1.2',port=6379)
+        redis_conn = redis.Redis(connection_pool=redis_pool)
+        pg_conn = Mypostgres()
+    except:
+        print('Connect to redis or postgresql failed')
+        logger.error('Connect to redis or postgresql failed')
+        
+    ftype_list = ['xiju', 'dongzuo', 'aiqing', 'kehuan', 
+                  'juqing', 'xuannian', 'zhanzheng', 'kongbu',
+                  'zainan', 'dongman']
+
+    #将获取到的电影url存入到redis中
+    for ftype in ftype_list:
+        url = 'https://www.piaohua.com/html/{}/'.format(ftype)
+        pages = PiaohuaSpider(url).pages
         for page in range(1,int(pages)):
-            list_url = 'https://www.piaohua.com/html/%s/list_%d.html' %(self.__ftype, page)
-            sub_ourl = openurl.OpenUrl(list_url)
-            sub_code,sub_content = sub_ourl.openurl()
-            if sub_code == 200:
-                selector = etree.HTML(sub_content)
-                for link in selector.xpath('//span/a'):
-                    sub_url = link.attrib['href']
-                    if sub_url.startswith('/html/'+ self.__ftype ):
-                        fkey = self.__ftype + str(redis_id)
-                        self.__redis_link.set(fkey, sub_url, ex=21600)
-                        redis_id += 1
+            page_list_url = url + 'list_' + str(page) + '.html'
+            piaohua = PiaohuaSpider(page_list_url)
+            if not piaohua.html:
+                continue
+            for page_u in piaohua.page_url:
+                try:
+                    redis_conn.lpush(ftype, page_u)
+                    print("Put [{0}] into redis list successfully".format(page_u))
+                    logger.info("Put [{0}] into redis list successfully".format(page_u))
+                except Exception as e:
+                    print("Put [{0}] into redis list failed:[{1}]".format(page_u, e))
+                    logger.error("Put [{0}] into redis list failed:[{1}]".format(page_u, e))
+            time.sleep(0.5)
+    time.sleep(5)
+    
+    #从redis中获取url，获取数据，并写入数据库
+    for ftype in ftype_list:
+        if args.update:
+            current_uri = pg_conn.execute('select uri from piaohua order by uri desc limit 1')[0][0]
+        elif args.all:
+            current_uri= '/html/{}/2000/0101/00000.html'.format(ftype)
+        print('Handling the [{}] type...'.format(ftype))
+        logger.info('Handling the [{}] type...'.format(ftype))
+        for value in redis_conn.sort(ftype,alpha=True,desc=True):
+            value = value.decode('utf-8')
+            if operator.gt(current_uri, value):
+                print('the uri [{}] is timeout!'.format(value))
+                logger.info('the uri [{}] is timeout!'.format(value))
+                break
+            moive = PiaohuaSpider('https://www.piaohua.com' + value) 
+            if not moive.html or not moive.down_url:
+                print('get [{}] failed'.format(moive.moivename))
+                logger.error('get [{}] failed'.format(moive.moivename))
+                continue
+            else:
+                print('get [{}] successfully'.format(moive.moivename))
+                logger.info('get [{}] successfully'.format(moive.moivename))
+            
+            send_pg([moive.moivename, ftype, moive.public_time, moive.down_url, value], pg_conn)
             time.sleep(0.5)
 
-    def get_download_url(self):
-        '''主要函数'''
-        redis_id = 0
-        while True:
-            fkey = self.__ftype + str(redis_id)
-            line = self.__redis_link.get(fkey)
-            redis_id += 1
-            if line:
-                 #构建url
-                 url = 'https://www.piaohua.com' + line.decode()
-                 #获取html内容
-                 ourl = openurl.OpenUrl(url)
-                 code, content = ourl.openurl()
-                 #初始化list
-                 list_down = []
-                 #判断是否正确打开
-                 if code == 200:
-                     #反爬虫
-                     time.sleep(0.5)
-                     #构建soup
-                     soup = BeautifulSoup(content,'lxml')
-                     #获取名称
-                     name = soup.title.string.split('_')[0]
-                     #获取a标签的href属性，并去除\r，避免后续处理的麻烦
-                     for link in soup.find_all('a'):
-                         url = link.get('href')
-                         if not url is None and 'ftp' in url:
-                            url = ''.join(url.split())
-                            list_down.append(url)
-                         else:
-                            continue
-                     #构建最后的str
-                     if list_down != []:
-                         str_down = '#'.join(list_down)
-                         self.send_mysql(name, str_down)
-                     else:
-                         self.__logger.error("[ %s ] can not find dowload link..." %name)
-                 else:
-                     self.__logger.critical("bad url: [ %s ]" %url)
-            else:
-                break
-
-
-    def send_mysql(self, name, str_down):
-        '''将数据写入数据库'''
-        sql = "insert into piaohua(name, content, type) value ('%s', '%s', '%s')"%(name,str_down,self.__ftype)
-        connect = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'misc/mysql_data.yaml'))
-        code = connect.change_data(sql)
-        if code == 0:
-            self.__logger.info('[%s] ok'%name)
-        else:
-            self.__logger.error('[%s] error,message: [%s]'%(name, code))
-
-
 if __name__ == '__main__':
-    ftype = input("需要下载的类型:\n<dongzuo,xiju,aiqing,kehuan,juqing,xuannian,wenyi,zhanzheng,kongbu,zainan,lianxuju,dongman>\n:")
-    piaohua = Piaohua(ftype)
-    piaohua.get_url()
-    piaohua.get_download_url()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-a', '--all', help='获取全部数据', action="store_true")
+    parser.add_argument('-u', '--update', help='更新数据', action="store_true")
+    args= parser.parse_args()
+    if not args.all and not args.update:
+        print("请使用-h获取帮助信息..")
+        exit()
+    main(args)

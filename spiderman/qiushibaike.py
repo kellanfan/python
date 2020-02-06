@@ -1,34 +1,34 @@
-#/usr/bin/env python
-#coding=utf8
-"""
-# Author: kellanfan
-# Created Time : Sun 25 Nov 2018 07:50:36 PM CST
+# pylint: disable=no-member
+# -*- encoding: utf-8 -*-
+'''
+@File    :   qiushibaike.py
+@Time    :   2020/02/05 15:58:41
+@Author  :   Kellan Fan 
+@Version :   1.0
+@Contact :   kellanfan1989@gmail.com
+@Desc    :   None
+'''
 
-# File Name: qiushibaike.py
-# Description:
+# here put the import lib
 
-"""
 import os
 from lxml import etree
 from misc import openurl
-from misc import mysql_connect
-from misc.logger import Logger
+from misc import pg_client
 
-
-def send_mysql(item, logger):
+def send_pg(connect,item):
         '''将数据写入数据库'''
         sql = "insert into qiubai(imgurl, username, content, vote, comment) value ('%s', '%s', '%s', '%s', '%s')"%(item['imgUrl'], item['username'], item['content'], item['vote'], item['comment'])
-        connect = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'misc/mysql_data.yaml'))
-        code = connect.change_data(sql)
-        if code == 0:
-            logger.info('[%s] ok'%item['username'])
+        ret = connect.execute(sql)
+        if ret:
+            print('[{}] ok'.format(item['username']))
         else:
-            logger.error('[%s] error,message: [%s]'%(item['username'], code))
+            print('[{0}] error,message: [{1}]'.format(item['username'], ret))
 
 def spiderman():
     url = 'https://www.qiushibaike.com/8hr/page/1/'
     ourl = openurl.OpenUrl(url)
-    code, doc = ourl.openurl()
+    code, doc = ourl.run()
     if code == 200:
         selector = etree.HTML(doc)
         content = selector.xpath("//div[contains(@id,'qiushi_tag')]")
@@ -56,11 +56,10 @@ def spiderman():
     return item
 
 def main():
-    mylog = Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
-    logger = mylog.outputLog()
     items = spiderman()
+    pg_conn = pg_client.Mypostgres()
     for item in items:
-        send_mysql(item, logger)
+        send_pg(pg_conn, item)
 
 if __name__ == '__main__':
     main()

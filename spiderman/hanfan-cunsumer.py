@@ -18,14 +18,13 @@ from misc.openurl import OpenUrl
 from lxml import etree
 from misc import pg_client
 
-def send_pg(fkey, cloudpan_url, cloudpan_pass):
-    sql = "insert into hanfan(name,url,panpass) values ('{}', '{}', '{}')".format(fkey, cloudpan_url, cloudpan_pass)
-    ret = pg_connect.change_data(sql)
-    if ret == 0:
-        print('insert [{}] ok...'.format(fkey))
+def send_pg(para):
+    sql = "insert into hanfan(name,url,panpass) values (%s,%s,%s)"
+    ret = pg_connect.execute(sql, para)
+    if ret:
+        print('insert [{}] ok...'.format(para))
     else:
-        print(ret)
-        sys.exit()
+        print('insert [{0}] failed: [{1}]'.format(para, ret))
 
 def callback(ch, method, properties, body):  # 四个参数为标准格式
     # 管道内存对象  内容相关信息  后面讲
@@ -51,7 +50,7 @@ def callback(ch, method, properties, body):  # 四个参数为标准格式
                 cloudpan_pass = cloudpan_pass[0]
         except:
             pass
-        send_pg(fkey, cloudpan_url, cloudpan_pass)
+        send_pg([fkey, cloudpan_url, cloudpan_pass])
     else:
         pass
     time.sleep(0.5)

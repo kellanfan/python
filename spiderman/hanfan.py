@@ -70,28 +70,27 @@ class Hanfan(object):
                         cloudpan_url = '|'.join(cloudpan_url)
                         cloudpan_pass = '|'.join(selecter.xpath('//div[@class="part"]/text()')[2:4])
                     else:
-                        #self.__logger.error('[%s] donot has cloudpan download link...'%fkey.decode())
+                        print('[{}] donot has cloudpan download link...'.format(fkey.decode()))
                         continue
                 except:
-                    #self.__logger.error('[%s] miss something..'%fkey.decode())
+                    print('[{}] miss something..'.format(fkey.decode()))
                     continue
-                self.send_pg(fkey, cloudpan_url, cloudpan_pass)
+                self.send_pg([fkey, cloudpan_url, cloudpan_pass])
             else:
-                #self.__logger.error('[%s] can not open the download page..'%fkey.decode())
+                print('[%s] can not open the download page..'%fkey.decode())
                 continue
             time.sleep(0.5)
 
-    def send_pg(self, fkey, cloudpan_url, cloudpan_pass):
-        sql = "insert into hanfan(name,url,panpass) values ('{}', '{}', '{}')".format(fkey.decode('utf-8'), cloudpan_url, cloudpan_pass)
-        ret = self.pg_connect.change_data(sql)
-        if ret == 0:
-            print('insert [{}] ok...'.format(fkey))
+    def send_pg(self, para):
+        sql = "insert into hanfan(name,url,panpass) values (%s,%s,%s)"
+        ret = self.pg_connect.execute(sql)
+        if ret:
+            print('insert [{}] ok...'.format(para))
         else:
-            print(ret)
-            sys.exit()
+            print("insert [{}] failed: [{ret}]".format(para, ret))
+
 if __name__ == '__main__':
     a = Hanfan()
     for i in ['variety', 'movie', 'hanju']:
         a.get_url(i)
     a.get_download_url()
-

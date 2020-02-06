@@ -37,14 +37,13 @@ def get_downlink(url_part):
     else:
         return 'null','null'
 
-def send_pg(name, str_down):
-    sql = "insert into meiju(name, content) values ('%s', '%s')"%(name,str_down)
-    connect = pg_client.Mypostgres()
-    code = connect.change_data(sql)
+def send_pg(connect, para):
+    sql = "insert into meiju(name, content) values (%s, %s)"
+    code = connect.execute(sql,para)
     if code == 0:
-        print('[{}] ok'.format(name))
+        print('[{}] ok'.format(para))
     else:
-        print('{} error, message: {}'.format(name,code))
+        print('[{0}] error, message: [{1}]'.format(para,code))
 
 def page_link(url):
     '''获取页面的每个美剧的url信息'''
@@ -54,9 +53,7 @@ def page_link(url):
         selecter = etree.HTML(doc)
         return selecter.xpath("//a[@class='B font_14']/@href")
     else:
-        return []
-        
-    
+        return [] 
 
 def main():
     print("欢迎使用 美剧天堂 爬取脚本")
@@ -66,14 +63,15 @@ def main():
     ftype = input('请输入需要爬取的类型的代号：')
     start_url="http://www.meijutt.tv/file/list%s.html" %ftype
     ourl = openurl.OpenUrl(start_url,'gb2312')
-    code,doc = ourl.run()
+    code,doc = ourl.run()    
+    pg_conn = pg_client.Mypostgres()
     if code == 200:
         selecter = etree.HTML(doc)
         pages = selecter.xpath("//div[@class='page']/span/text()")[0].split()[0].split('/')[1]
         firstpage_links = selecter.xpath("//a[@class='B font_14']/@href")
         for firstpage_link in firstpage_links:
             name,download_links = get_downlink(firstpage_link)
-            send_pg(name, download_links)
+            send_pg(pg_conn,[name, download_links])
             time.sleep(0.5)
 
         for page in range(2,int(pages)):

@@ -11,14 +11,13 @@
 
 # here put the import lib
 import platform
-import time
-import os
 import json
-from misc import mysql_connect
-from misc import openurl
+import time
+from misc.pg_client import Mypostgres
+from misc.openurl import OpenUrl
 
 def insert_data(dic):
-    if  dic['view'] == '--':
+    if dic['view'] == '--':
         dic['view'] = 0
     elif dic['danmaku'] == '--':
         dic['danmaku'] = 0
@@ -30,24 +29,24 @@ def insert_data(dic):
         dic['coin'] = 0
     elif dic['share'] == '--':
         dic['share'] = 0
-    cmd = "insert into bili(v_aid, v_view, v_danmaku, v_favorite, v_reply, v_coin, v_share) values (%d,%d,%d,%d,%d,%d,%d)"%(dic['aid'], dic['view'], dic['danmaku'], dic['favorite'], dic['reply'], dic['coin'], dic['share'])
-    code = mysql_conn.change_data(cmd)
-    if code == 0:
-        print('[%d] ok'%dic['aid'])
-    else:
-        print('[%d] error,message: [%s]'%(dic['aid'], code))
-
-if __name__ == "__main__":
-    if 'Windows' in platform.platform():
-        mysql_conn = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'python\\spider\\misc\\mysql_data.yaml'))
-    elif 'Linux' in platform.platform():
-        mysql_conn = mysql_connect.MysqlConnect(os.path.join(os.path.abspath(os.path.curdir),'misc/mysql_data.yaml'))
     else:
         pass
+    sql = '''insert into bili(
+            v_aid, v_view, v_danmaku, v_favorite, v_reply, v_coin, v_share) 
+            values (%s,%s,%s,%s,%s,%s,%s)
+        '''%(dic['aid'], dic['view'], dic['danmaku'], dic['favorite'], dic['reply'], dic['coin'], dic['share'])
+    count = pg_conn.execute(sql)
+    if count:
+        print('[{}] ok'.format(dic['aid']))
+    else:
+        print('[{0}] error,message: [{1}]'.format(dic['aid'], count))
+
+if __name__ == "__main__":
+    pg_conn = Mypostgres()
     urls = ["http://api.bilibili.com/x/web-interface/archive/stat?aid={}".format(i) for i in range(20000,40000)]
     for url in urls:
-        ourl = openurl.OpenUrl(url)
-        code,doc = ourl.openurl()
+        ourl = OpenUrl(url)
+        code,doc = ourl.run()
         time.sleep(0.5)
         if code == 200:
             data = json.loads(doc)

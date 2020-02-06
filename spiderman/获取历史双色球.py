@@ -31,9 +31,9 @@ if code == 200:
             issue_num = item_info[1]
             r_nunber, b_number = item_info[2].split('|')
             if opendate > last_time[0][0]:
-                sql = "insert into shuang_se_qiu(opendate, issue_num, r_number, b_number) values ('{}', '{}', '{}', '{}')".format(opendate, issue_num, r_nunber,b_number)
-                ret = pg_conn.change_data(sql)
-                if ret == 0:
+                sql = "insert into shuang_se_qiu(opendate, issue_num, r_number, b_number) values (%s,%s,%s,%s)"
+                ret = pg_conn.execute(sql,[opendate, issue_num, r_nunber,b_number])
+                if ret:
                     print("insert [{}] ok..".format(issue_num))
                 else:
-                    print(ret)
+                    print("insert [{0}] failed: [{1}]".format(issue_num, ret))

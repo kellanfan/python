@@ -61,12 +61,12 @@ if __name__ == "__main__":
         exit()
     postgresql = Mypostgres()
     select_cmd = 'select public_time from dian_ying_tian_tang order by public_time desc limit 1'
-    last_time = postgresql.select_data(select_cmd)[0][0].strip()
+    last_time = postgresql.execute(select_cmd)[0][0].strip()
     for info in info_list:
         if info['public_time'] > last_time:
             cmd = "insert into dian_ying_tian_tang(name,public_time,downlink) values ('%s', '%s', '%s')"%(info['name'],info['public_time'],info['downlink'])
-            res = postgresql.change_data(cmd)
-            if res == 0:
-                print("insert [%s] ok.."%info['name'])
+            res = postgresql.execute(cmd)
+            if res:
+                print("insert [{}] ok..".format(info['name']))
             else:
-                print(res)
+                print("insert [{}] failed: [{}]".format(info['name'],res))
