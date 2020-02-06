@@ -140,6 +140,11 @@ def main(args):
 
     #将获取到的电影url存入到redis中
     for ftype in ftype_list:
+        try:
+            cur_redis_uri = redis_conn.sort(ftype,alpha=True,desc=True)[0]
+        except Exception as e:
+            logger.error('redis dones not has the type [{}] keys'.format(ftype))
+        logger.info('the type [{0}], cur_redis_utl is [{1}]'.format(ftype, cur_redis_uri))
         url = 'https://www.piaohua.com/html/{}/'.format(ftype)
         pages = PiaohuaSpider(url).pages
         for page in range(1,int(pages)):
@@ -147,6 +152,8 @@ def main(args):
             piaohua = PiaohuaSpider(page_list_url)
             if not piaohua.html:
                 continue
+            if operator.ge(cur_redis_uri.decode('utf-8'), piaohua.page_url[0]):
+                break
             for page_u in piaohua.page_url:
                 try:
                     redis_conn.lpush(ftype, page_u)
