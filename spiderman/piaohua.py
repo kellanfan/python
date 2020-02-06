@@ -144,6 +144,7 @@ def main(args):
             cur_redis_uri = redis_conn.sort(ftype,alpha=True,desc=True)[0]
         except Exception as e:
             logger.error('redis dones not has the type [{}] keys'.format(ftype))
+            cur_redis_uri = '/html/{}/2000/0101/00000.html'.format(ftype)
         logger.info('the type [{0}], cur_redis_utl is [{1}]'.format(ftype, cur_redis_uri))
         url = 'https://www.piaohua.com/html/{}/'.format(ftype)
         pages = PiaohuaSpider(url).pages
