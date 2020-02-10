@@ -13,12 +13,11 @@ import redis
 from lxml import etree
 from misc.openurl import OpenUrl
 from misc import pg_client
-
+from log.create_logger import create_logger
+logger = create_logger()
 class Hanfan(object):
     def __init__(self):
         self.__redis_link = self.__redis_connect()
-        #mylog = Logger(os.path.join(os.path.abspath(os.path.curdir),'misc/spider_log.yaml'))
-        #self.__logger = mylog.outputLog()
         self.pg_connect = pg_client.Mypostgres()
         self.main_url = 'https://www.hanfan.cc/'
 
@@ -33,7 +32,7 @@ class Hanfan(object):
             selecter = etree.HTML(main_content)
             pages = int(selecter.xpath('/html/body/section/div[1]/div/div[2]/ul/li[8]/span/text()')[0].split(' ')[1])
         else:
-            print("bad url: %s" %self.main_url)
+            logger.error("bad url: %s" %self.main_url)
             sys.exit()
 
         for page in range(1,pages):
@@ -48,7 +47,7 @@ class Hanfan(object):
                     sub_url = link.attrib['href'] + '#prettyPhoto/0/'
                     self.__redis_link.set(name, sub_url, ex=21600)
             else:
-                #self.__logger.error('[%s] can not open...'%page_url)
+                logger.error('[%s] can not open...'%page_url)
                 continue
 
             time.sleep(1)
@@ -70,14 +69,14 @@ class Hanfan(object):
                         cloudpan_url = '|'.join(cloudpan_url)
                         cloudpan_pass = '|'.join(selecter.xpath('//div[@class="part"]/text()')[2:4])
                     else:
-                        print('[{}] donot has cloudpan download link...'.format(fkey.decode()))
+                        logger.error('[{}] donot has cloudpan download link...'.format(fkey.decode()))
                         continue
                 except:
-                    print('[{}] miss something..'.format(fkey.decode()))
+                    logger.error('[{}] miss something..'.format(fkey.decode()))
                     continue
                 self.send_pg([fkey, cloudpan_url, cloudpan_pass])
             else:
-                print('[%s] can not open the download page..'%fkey.decode())
+                logger.error('[%s] can not open the download page..'%fkey.decode())
                 continue
             time.sleep(0.5)
 
@@ -85,9 +84,9 @@ class Hanfan(object):
         sql = "insert into hanfan(name,url,panpass) values (%s,%s,%s)"
         ret = self.pg_connect.execute(sql)
         if ret:
-            print('insert [{}] ok...'.format(para))
+            logger.info('insert [{}] ok...'.format(para))
         else:
-            print("insert [{}] failed: [{ret}]".format(para, ret))
+            logger.error("insert [{}] failed: [{ret}]".format(para, ret))
 
 if __name__ == '__main__':
     a = Hanfan()

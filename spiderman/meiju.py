@@ -13,6 +13,8 @@ import time
 from lxml import etree
 from misc import pg_client
 from misc import openurl
+from log.create_logger import create_logger
+logger = create_logger()
 
 def get_downlink(url_part):
     str_down = ''
@@ -41,9 +43,9 @@ def send_pg(connect, para):
     sql = "insert into meiju(name, content) values (%s, %s)"
     code = connect.execute(sql,para)
     if code == 0:
-        print('[{}] ok'.format(para))
+        logger.info('[{}] ok'.format(para))
     else:
-        print('[{0}] error, message: [{1}]'.format(para,code))
+        logger.error('[{0}] error, message: [{1}]'.format(para,code))
 
 def page_link(url):
     '''获取页面的每个美剧的url信息'''

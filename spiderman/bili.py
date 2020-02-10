@@ -15,6 +15,9 @@ import json
 import time
 from misc.pg_client import Mypostgres
 from misc.openurl import OpenUrl
+from log.create_logger import create_logger
+
+logger = create_logger()
 
 def insert_data(dic):
     if dic['view'] == '--':
@@ -37,9 +40,9 @@ def insert_data(dic):
         '''%(dic['aid'], dic['view'], dic['danmaku'], dic['favorite'], dic['reply'], dic['coin'], dic['share'])
     count = pg_conn.execute(sql)
     if count:
-        print('[{}] ok'.format(dic['aid']))
+        logger.info('[{}] ok'.format(dic['aid']))
     else:
-        print('[{0}] error,message: [{1}]'.format(dic['aid'], count))
+        logger.error('[{0}] error,message: [{1}]'.format(dic['aid'], count))
 
 if __name__ == "__main__":
     pg_conn = Mypostgres()

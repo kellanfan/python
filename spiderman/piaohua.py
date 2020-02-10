@@ -16,7 +16,10 @@ import argparse
 from lxml import etree
 from misc.openurl import OpenUrl
 from misc.pg_client import Mypostgres
-from log.logger import logger
+from log.create_logger import create_logger
+
+logger = create_logger()
+
 class PiaohuaSpider(object):
     '''
         通过url获取需要的数据

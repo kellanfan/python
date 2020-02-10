@@ -15,6 +15,9 @@ import time
 from lxml import etree
 from misc.openurl import OpenUrl
 from misc.pg_client import Mypostgres
+from log.create_logger import create_logger
+
+logger = create_logger()
 
 def getMovieUrl(html):
     selecter = etree.HTML(html)
@@ -24,7 +27,7 @@ def getMovieUrl(html):
         movie_url.remove('/app.html')
         movie_url.remove('/html/gndy/dyzz/index.html')
     except:
-        print('[{}] donnot has "app.html" or "index.html"'.format(movie_url))
+        logger.error('[{}] donnot has "app.html" or "index.html"'.format(movie_url))
     return movie_url
 
 def getMovieInfo(url):
@@ -67,6 +70,6 @@ if __name__ == "__main__":
             cmd = "insert into dian_ying_tian_tang(name,public_time,downlink) values ('%s', '%s', '%s')"%(info['name'],info['public_time'],info['downlink'])
             res = postgresql.execute(cmd)
             if res:
-                print("insert [{}] ok..".format(info['name']))
+                logger.info("insert [{}] ok..".format(info['name']))
             else:
-                print("insert [{}] failed: [{}]".format(info['name'],res))
+                logger.error("insert [{}] failed: [{}]".format(info['name'],res))

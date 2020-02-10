@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
-import urllib2
 import urllib
 import re
 import os
-if not os.path.isdir('./image'):
-    os.mkdir('./image')
+from misc.openurl import OpenUrl
+from log.create_logger import create_logger
+from lxml import etree
+
+logger = create_logger()
 
 def gethtml(url):
-    page = urllib2.urlopen(url)
-    html = page.read()
+    ourl = OpenUrl(url)
+    code,html = ourl.run()
+    if code != 200:
+        html = None
     return html
 
 def getimg(html):
     reg = r'data-id="(\d*)" data-seq'
     dataid = re.compile(reg)
     dataidlist = re.findall(dataid, html)
-    localdir = os.path.abspath('./image')
+    localdir = os.path.abspath('image')
     for pinid in dataidlist:
         url_str = r'http://huaban.com/pins/%s/' % pinid
         pin_id_source = gethtml(url_str)
@@ -34,23 +38,14 @@ def getimg(html):
             continue
         print("获取：%s成功！" % img_url)
     print("图片保存成功！")
-def get_boards(url):
-    html = gethtml(url)
-    reg1 = r'"board_id":(\d*)'
-    boardid = re.compile(reg1)
-    boardid1 = re.findall(boardid, html)
-    boardidlist = list(set(boardid1))
-    return boardidlist
+
+def get_users(url):
+    selecter = etree.HTML(gethtml(url))
+    return selecter.xpath('//a[@class="username"]/@href')
+
 if __name__ == '__main__':
-    boardidlist = get_boards("http://huaban.com/fk674188382/following/")
-    print boardidlist
-    for boardid in boardidlist:
-        board_url = r'http://huaban.com/boards/%s' %boardid
-        try:
-            html = gethtml(board_url)
-        except:
-            print ("bad url: %s") % board_url
-            continue
-        getimg(html)
-    html = gethtml("http://huaban.com/boards/735459/")
-    getimg(html)
+    if not os.path.isdir('image'):
+        os.mkdir('image')
+    users_list = get_users("https://huaban.com/x8udz9xpqvx/following/")
+    print(users_list)
+
