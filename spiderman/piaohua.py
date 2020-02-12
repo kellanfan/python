@@ -46,6 +46,7 @@ class PiaohuaSpider(object):
             return html
         else:
             print('open [{}] failed..'.format(url))
+            return None
 
     def get_pages(self):
         '''
@@ -151,7 +152,11 @@ def main(args):
             cur_redis_uri = '/html/{}/2000/0101/00000.html'.format(ftype)
         logger.info('the type [{0}], cur_redis_utl is [{1}]'.format(ftype, cur_redis_uri))
         url = 'https://www.piaohua.com/html/{}/'.format(ftype)
-        pages = PiaohuaSpider(url).pages
+        try:
+            pages = PiaohuaSpider(url).pages
+        except Exception as e:
+            logger.error('Get the pages info failed: [{}]'.format(e))
+            continue
         for page in range(1,int(pages)):
             page_list_url = url + 'list_' + str(page) + '.html'
             piaohua = PiaohuaSpider(page_list_url)
