@@ -69,7 +69,7 @@ class OpenUrl(object):
         try:
             requests.adapters.DEFAULT_RETRIES = 10
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-            response = requests.get(self.__url, headers=self.__headers, verify=False)
+            response = requests.get(self.__url, headers=self.__headers, timeout=5, verify=False)
             response.encoding = self.__encode
             return response.status_code, response.text
         except Exception as e:
