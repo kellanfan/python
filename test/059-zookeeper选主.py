@@ -41,14 +41,14 @@ class ZKMaster(object):
                 self.create_instance()
                 self.is_master = True
                 print("I am be master!")
-            except:
-                print("Try to be master failed!")
+            except Exception as e:
+                print("Try to be master failed: {}".format(e))
 
     def watcher(self):
         try:
             DataWatch(client=self.zk, path=self.path,func=self.data_change)
         except Exception as e:
-            print("Create children wather failed: [{}]".format(e))
+            print("Create data wather failed: [{}]".format(e))
 
 def run():
     hosts = ['192.168.1.5:2181','192.168.1.6:2181','192.168.1.7:2181']
