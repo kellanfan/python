@@ -56,7 +56,7 @@ class HyperData(object):
                 else:
                     place_group_ids = hypernode['place_group_ids'][0]
             except:
-                print "%s info cannot get!!!" %host_machine
+                print "%s plg info cannot get!!!" %host_machine
                 continue
             if place_group_ids == self.__plg:
                 self.__hyper_list.append(host_machine)
@@ -77,7 +77,7 @@ class HyperData(object):
         lenth = len(self.__hyper_list)
         #if vcpu == 0 or vmem == 0 or vdisk == 0:
         if not all([vcpu,vmem,vdisk]):
-            return result
+            return (0,result)
         else:
             real_mem = int(real_mem/1024)
             real_disk = int(real_disk/1024/1024)
@@ -117,7 +117,7 @@ class HyperData(object):
 
 def main():
     try:
-        with open('./config.yml') as f:
+        with open('./config.yaml') as f:
             config = yaml.load(f.read())
     except:
         print "Cannot find the config file..."
@@ -140,13 +140,12 @@ def main():
             content_botset = content['bot_set']
         for plg in config['zones'][zone]:
             plg_info = HyperData(content_botset, plg)
-            try:
-                count,infomations = plg_info.cal_data()
+            count,infomations = plg_info.cal_data()
+            if count != 0:
                 print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
-            except:
-                print "api data has something wrong,or please check the plg is correct in config.yaml"
-                exit()
+            else:
+                print "\033[0;31m可能没有这个plg：[{}]， 或者所有hyper同属于2个plg，这里只取一个plg的信息，忽略该plg \033[0m".format(plg)
+                continue
 
 if __name__ == '__main__':
     main()
-
