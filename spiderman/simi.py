@@ -7,6 +7,7 @@
 # Description:
 
 """
+import os
 import string
 import random
 import re
@@ -76,6 +77,9 @@ def get_img(redis_conn):
 
 def main():
     start_url = 'https://se.haodd92.com/listhtml/7'
+    if os.path.exists('image'):
+        os.mkdir('image')
+
     try:
         redis_pool = redis.ConnectionPool(host='192.168.1.2',port=6379)
         redis_conn = redis.Redis(connection_pool=redis_pool)
@@ -83,7 +87,7 @@ def main():
     except Exception as e:
         redis_conn = None
         logger.error('Connect to redis failed: [{}]'.format(e))
-    get_useful_url(start_url，redis_conn)
+    get_useful_url(start_url,redis_conn)
     get_img(redis_conn)
 
 if __name__ == "__main__":
