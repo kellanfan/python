@@ -13,7 +13,10 @@
 import json
 import etcd
 import psycopg2
-#from log.logger import logger
+import sys
+sys.path.append('..')
+from log.create_logger import create_logger
+logger = create_logger
 
 class Mypostgres(object):
     def __init__(self):
@@ -23,7 +26,7 @@ class Mypostgres(object):
             self.postgresql_info = json.loads(etc_result.value)
         except Exception as e:
             self.postgresql_info = {}
-            print('Connect to Etcd server failed: [{}]'.format(e))
+            logger.error('Connect to Etcd server failed: [{}]'.format(e))
 
     def __init_conn(self):
         try:
@@ -36,7 +39,7 @@ class Mypostgres(object):
             )
         except Exception as e:
             conn = None
-            print('Connect to PostgreSQL failed: [{0}]'.format(e))
+            logger.error('Connect to PostgreSQL failed: [{0}]'.format(e))
         return conn
 
     def execute(self, sql, parameters=None):
@@ -48,7 +51,7 @@ class Mypostgres(object):
         '''
         action = sql.split()[0].strip().lower()
         if action not in ['select', 'insert', 'delete', 'update', 'create']:
-            print('The action [{0}] of SQL [{1}] is not supported!'.format(action, sql))
+            logger.error('The action [{0}] of SQL [{1}] is not supported!'.format(action, sql))
             return None
 
         conn = self.__init_conn()
@@ -69,7 +72,7 @@ class Mypostgres(object):
         except Exception as e:
             conn.rollback()
             result = None
-            print('Execute SQL [{0}] failed: [{1}]'.format(sql, e))
+            logger.error('Execute SQL [{0}] failed: [{1}]'.format(sql, e))
         finally:
             cursor.close()
             conn.close()
