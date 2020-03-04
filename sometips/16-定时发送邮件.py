@@ -112,7 +112,7 @@ def create_logger(log_name='spider'):
 def main():
     logger = create_logger()
     content = '请查收!谢谢!'
-    receivers = ['fankai@yunify.com']
+    receivers = ['liuhong@yunify.com']
     subject = '升级L3信息'
     xlsx_path = 'C:\\Users\\Administrator\\Desktop\\'
     xlsx_name_list = ['工单客户需求和bug问题汇总.xlsx', '升级L3工单统计.xlsx']
