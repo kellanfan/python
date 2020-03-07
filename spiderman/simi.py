@@ -77,7 +77,7 @@ def get_img(redis_conn):
 
 def main():
     start_url = 'https://se.haodd92.com/listhtml/7'
-    if os.path.exists('image'):
+    if not os.path.exists('image'):
         os.mkdir('image')
 
     try:
