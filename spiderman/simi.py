@@ -20,10 +20,6 @@ from log.create_logger import create_logger
 
 logger = create_logger()
 
-def gen_uuid():
-    uuid = ''.join(random.sample(string.ascii_lowercase + string.digits, 10))
-    return uuid
-
 def get_pages(start_url):
     url = start_url + '.html'
     ourl = OpenUrl(url)
@@ -65,8 +61,8 @@ def get_img(redis_conn):
             img_url_list = selecter.xpath('//div[@class="center margintop border clear main"]/img/@src')
             for img_url in img_url_list:
                 time.sleep(0.5)
-                img_name = gen_uuid()
-                local = 'image/{}.jpg'.format(img_name)
+                img_name = img_url.split('/')[-1]
+                local = 'image/{}'.format(img_name)
                 try:
                     r = requests.get(img_url, stream=True)
                     with open(local, 'wb') as f:
