@@ -11,8 +11,6 @@
 import yaml
 import time
 import os, sys
-from hypernode import Describe_Bots
-
 
 class HyperData(object):
     def __init__(self, content, plg):
@@ -48,16 +46,12 @@ class HyperData(object):
             host_machine = hypernode['host_machine']
             status = hypernode['status']
             if status not in ['active', 'standby']:
-                print "\033[0;31m%s status is %s!!! Maybe broken, please check!!! \033[0m" %(host_machine, status)
                 continue
-            try:
-                if hypernode.has_key('place_group_id_bak'):
-                    place_group_ids = hypernode['place_group_id_bak']
-                else:
-                    place_group_ids = hypernode['place_group_ids'][0]
-            except:
-                print "%s plg info cannot get!!!" %host_machine
+            
+            if not hypernode.has_key('real_total_memory'):
                 continue
+
+            place_group_ids = hypernode['place_groups'][0]['place_group_id']
             if place_group_ids == self.__plg:
                 self.__hyper_list.append(host_machine)
                 real_cpu += hypernode['total_vcpu']/self.__cpu_oversale_rate
@@ -75,7 +69,6 @@ class HyperData(object):
 
         result = []
         lenth = len(self.__hyper_list)
-        #if vcpu == 0 or vmem == 0 or vdisk == 0:
         if not all([vcpu,vmem,vdisk]):
             return (0,result)
         else:
@@ -114,38 +107,3 @@ class HyperData(object):
             result.append('{:.2f}'.format(per_vmem))
             result.append('{:.2f}'.format(per_vdisk))
             return lenth,result
-
-def main():
-    try:
-        with open('./config.yaml') as f:
-            config = yaml.load(f.read())
-    except:
-        print "Cannot find the config file..."
-        sys.exit()
-    else:
-        url = config.get('url')
-        access_key_id = config.get('access_key_id')
-        secret_access_key = config.get('secret_access_key')
-        zones = config['zones'].keys()
-
-    for zone in zones:
-        print "%s:" %zone
-        bots = Describe_Bots(zone,url,access_key_id,secret_access_key)
-        content = bots.run()
-        total_hyper = content['total_count']
-        if total_hyper > 100:
-            content1 = Describe_Bots(zone, url, '100')
-            content_botset = content1['bot_set'] + content['bot_set']
-        else:
-            content_botset = content['bot_set']
-        for plg in config['zones'][zone]:
-            plg_info = HyperData(content_botset, plg)
-            count,infomations = plg_info.cal_data()
-            if count != 0:
-                print "plg类型为[%s],数量为[%d],统计信息：%s"%(plg, count,str(infomations))
-            else:
-                print "\033[0;31m可能没有这个plg：[{}]， 或者所有hyper同属于2个plg，这里只取一个plg的信息，忽略该plg \033[0m".format(plg)
-                continue
-
-if __name__ == '__main__':
-    main()
