@@ -30,7 +30,6 @@ def check_status(content_botset):
     print("="*50)
 
 def main():
-    plg_map = {}
     try:
         with open('./config.yaml') as f:
             config = yaml.load(f.read())
