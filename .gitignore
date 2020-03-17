@@ -7,7 +7,7 @@
 #doc
 *.json
 *.txt
-*.yaml
+#*.yaml
 *.log
 *.data
 *.html
