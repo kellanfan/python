@@ -41,14 +41,14 @@ class APIConnection(object):
 
     def build_request(self, action_data):
         request = {}
+        string_to_sign = 'GET\n/iaas/\n'
+        pairs = []
         request.update(self.__base_para)
         request.update(action_data)
         now = datetime.datetime.now()
         time = now.strftime('%Y-%m-%dT%H:%M:%SZ')
         request['time_stamp'] = time
         keys = sorted(request.keys())
-        string_to_sign = 'GET\n/iaas/\n'
-        pairs = []
         for key in keys:
             val = request[key].encode('utf-8')
             pairs.append(urllib.quote(key, safe='') + '=' +
@@ -58,14 +58,17 @@ class APIConnection(object):
         data = urllib.urlencode(request)
         h = hmac.new(self.__secret_access_key, digestmod=sha256)
         h.update(string_to_sign)
-        sign = base64.b64encode(h.digest()).strip()
-        signature = urllib.quote_plus(sign)
-        url2 = self.api_url + '?' + data + '&signature=' + signature
-        return url2
+        signature = urllib.quote_plus(base64.b64encode(h.digest()).strip())
+        return self.api_url + '?' + data + '&signature=' + signature
 
     def send_request(self, request):
-        req = urllib2.Request(request, headers = self.__header)
-        response = urllib2.urlopen(req)
+        try:
+            req = urllib2.Request(request, headers = self.__header)
+            response = urllib2.urlopen(req)
+        except Exception as e:
+            print("ERROR: API接口无响应，请检查: 1.API地址及端口配置是否正确 2.API服务是否正常")
+            print("错误输出信息: {}".format(e))
+            sys.exit()
         return json.loads(response.read())
 
     def describe_zones(self):

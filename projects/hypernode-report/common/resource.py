@@ -28,14 +28,18 @@ class HyperData(object):
                     self.__cpu_oversale_rate = compute_server_conf['compute_server']['cpu_oversale_rate']
                 except:
                     self.__cpu_oversale_rate = 5
-                #try:
-                #    self.__mem_oversale_rate = compute_server_conf['compute_server']['mem_oversale_rate']
-                #except:
-                #    self.__mem_oversale_rate = 1
+                try:
+                    self.__mem_oversale_rate = compute_server_conf['compute_server']['mem_oversale_rate']
+                except:
+                    self.__mem_oversale_rate = 1
                 try:
                     self.__disk_reserve_rate = compute_server_conf['compute_server']['disk_reserve_rate']
                 except:
                     self.__disk_reserve_rate = 0.2
+        else:
+            self.__cpu_oversale_rate = 5
+            self.__mem_oversale_rate = 1
+            self.__disk_reserve_rate = 0.2
 
     def cal_data(self):
         real_cpu = 0; real_mem = 0; real_disk = 0
@@ -44,15 +48,13 @@ class HyperData(object):
         per_cpu = 0; per_mem = 0 ; per_disk = 0
         for hypernode in self.__content:
             host_machine = hypernode['host_machine']
-            status = hypernode['status']
-            if status not in ['active', 'standby']:
+            if hypernode['status'] not in ['active', 'standby']:
                 continue
             
             if not hypernode.has_key('real_total_memory'):
                 continue
-
-            place_group_ids = hypernode['place_groups'][0]['place_group_id']
-            if place_group_ids == self.__plg:
+ 
+            if hypernode['place_groups'][0]['place_group_id'] == self.__plg:
                 self.__hyper_list.append(host_machine)
                 real_cpu += hypernode['total_vcpu']/self.__cpu_oversale_rate
                 real_mem += hypernode['real_total_memory']

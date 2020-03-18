@@ -10,6 +10,7 @@
 '''
 
 # here put the import lib
+import sys
 import yaml
 from common.connection import APIConnection
 from common.resource import HyperData
@@ -18,8 +19,7 @@ def check_status(content_botset):
     error_status_hyper = []
     error_info_hyper = []
     for hypernode in content_botset:
-        status = hypernode['status']
-        if status not in ['active', 'standby']:
+        if hypernode['status'] not in ['active', 'standby']:
             error_status_hyper.append(hypernode['host_machine'].encode('utf-8'))
         elif not hypernode.has_key('real_total_memory'):
             error_info_hyper.append(hypernode['host_machine'].encode('utf-8'))
@@ -33,12 +33,13 @@ def main():
     try:
         with open('./config.yaml') as f:
             config = yaml.load(f.read())
-    except:
-        print("加载配置文件失败！")
-    else:
-        url = config.get('url')
-        access_key_id = config.get('access_key_id')
-        secret_access_key = config.get('secret_access_key')
+        url = config['url']
+        access_key_id = config['access_key_id']
+        secret_access_key = config['secret_access_key']
+    except Exception as e:
+        print("ERROR: 加载配置文件失败！请检查配置文件！")
+        print("错误输出信息: {}".format(e))
+        sys.exit()
 
     conn = APIConnection(url, access_key_id, secret_access_key)
     zones_info = conn.describe_zones()
