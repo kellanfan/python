@@ -22,7 +22,7 @@ from actions.plg import Plg
 from actions.bots import Describe_Bots
 
 class APIConnection(object):
-    def __init__(self, api_url, access_key_id, secret_access_key, port=7777, uri='/iaas'):
+    def __init__(self, api_url, access_key_id, secret_access_key):
         self.api_url = api_url
         self.__access_key_id = access_key_id
         self.__secret_access_key = secret_access_key

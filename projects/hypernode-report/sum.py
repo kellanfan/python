@@ -33,8 +33,8 @@ def main():
     try:
         with open('./config.yaml') as f:
             config = yaml.load(f.read())
-    except Exception as e:
-        print("Load config file Failed: [{}]".format(e))
+    except:
+        print("加载配置文件失败！")
     else:
         url = config.get('url')
         access_key_id = config.get('access_key_id')
