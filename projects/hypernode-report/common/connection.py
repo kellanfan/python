@@ -20,7 +20,7 @@ sys.path.append('../actions')
 from actions.zones import Zones
 from actions.plg import Plg
 from actions.bots import Describe_Bots
-
+from actions.billing import Billing
 class APIConnection(object):
     def __init__(self, api_url, access_key_id, secret_access_key):
         self.api_url = api_url
@@ -84,4 +84,9 @@ class APIConnection(object):
     def describe_bots(self, zone, offset='0'):
         bots_body = Describe_Bots(zone, offset)
         request = self.build_request(bots_body())
+        return self.send_request(request)
+
+    def get_charge_records(self,zone,start_time,end_time):
+        body = Billing(zone,start_time,end_time)
+        request = self.build_request(body())
         return self.send_request(request)
