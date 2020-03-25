@@ -15,7 +15,7 @@ from common.connection import APIConnection
 
 def gen_time(dt):
     dt = map(lambda x: int(x),re.split('-| |:', dt))
-    return datetime.datetime(int(dt[0]),int(dt[1]),int(dt[2]),int(dt[3]),int(dt[4]),int(dt[5]),).strftime('%Y-%m-%dT%H:%M:%SZ')
+    return datetime.datetime(*dt).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 def main():
     try:
