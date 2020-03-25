@@ -20,7 +20,7 @@ ourl = OpenUrl(url)
 code,doc = ourl.run()
 pg_conn = Mypostgres()
 s_sql = 'select opendate from shuang_se_qiu order by opendate desc limit 1'
-last_time = pg_conn.select_data(s_sql)
+last_time = pg_conn.execute(s_sql)
 if code == 200:
     selecter = etree.HTML(doc)
     info_list = selecter.xpath("//span[@id='spnHidValue']/text()")
