@@ -41,11 +41,4 @@ def create_logger(log_name='spider'):
     if not logger.handlers:
         logger.setLevel(logging.DEBUG)
         logger.addHandler(fh)
-    else:
-        name_list = []
-        for lg in logger.handlers:
-            name_list.append(lg.name)
-        if log_name not in name_list:
-            logger.setLevel(logging.DEBUG)
-            logger.addHandler(fh)
     return logger
