@@ -16,7 +16,7 @@ import psycopg2
 import sys
 sys.path.append('..')
 from log.create_logger import create_logger
-logger = create_logger
+logger = create_logger('pg_client')
 
 class Mypostgres(object):
     def __init__(self):

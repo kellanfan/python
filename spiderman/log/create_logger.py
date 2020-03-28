@@ -21,7 +21,7 @@ def create_logger(log_name='spider'):
     elif platform.system() == 'Windows':
         log_path = 'C:\\log\\spider'
     else:
-        log_path = None
+        log_path = '.'
     # make sure the log dir exist
     if not os.path.exists(log_path):
         os.makedirs(log_path)
@@ -33,6 +33,7 @@ def create_logger(log_name='spider'):
     log_file = log_path + '/' + log_name + '.log'
     fh = RotatingFileHandler(log_file, mode='a', maxBytes=100000000, backupCount=10)
     fh.setLevel(logging.DEBUG)
+    fh.set_name(log_name)
     fh.setFormatter(formatter)
 
     # create logger
@@ -40,4 +41,11 @@ def create_logger(log_name='spider'):
     if not logger.handlers:
         logger.setLevel(logging.DEBUG)
         logger.addHandler(fh)
+    else:
+        name_list = []
+        for lg in logger.handlers:
+            name_list.append(lg.name)
+        if log_name not in name_list:
+            logger.setLevel(logging.DEBUG)
+            logger.addHandler(fh)
     return logger

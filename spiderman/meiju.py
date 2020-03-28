@@ -39,10 +39,10 @@ def get_downlink(url_part):
     else:
         return 'null','null'
 
-def send_pg(connect, para):
+def send_pg(pg_conn, para):
     sql = "insert into meiju(name, content) values (%s, %s)"
-    code = connect.execute(sql,para)
-    if code == 0:
+    code = pg_conn.execute(sql,para)
+    if code:
         logger.info('[{}] ok'.format(para))
     else:
         logger.error('[{0}] error, message: [{1}]'.format(para,code))
