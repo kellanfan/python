@@ -85,8 +85,3 @@ class APIConnection(object):
         bots_body = Describe_Bots(zone, offset)
         request = self.build_request(bots_body())
         return self.send_request(request)
-
-    def get_charge_records(self,zone,start_time,end_time):
-        body = Billing(zone,start_time,end_time)
-        request = self.build_request(body())
-        return self.send_request(request)
