@@ -1,5 +1,2 @@
-#python
-
-learn python by myself
-
-计划学习实现的东西：基于etcd的分布式锁，py编译脚本
+####目的
+该项目只是自学python的项目，另外有一些有趣或者使用的脚本或者思路都会记录在此
