@@ -77,7 +77,7 @@ def main():
         os.mkdir('image')
 
     try:
-        redis_pool = redis.ConnectionPool(host='192.168.1.2',port=6379)
+        redis_pool = redis.ConnectionPool(host='redis',port=6379)
         redis_conn = redis.Redis(connection_pool=redis_pool)
         logger.info('Connect to redis successfully')
     except Exception as e:

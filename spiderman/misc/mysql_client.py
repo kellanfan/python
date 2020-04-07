@@ -16,7 +16,7 @@ from misc.logger import logger
 
 class MysqlConnect(object):
     def __init__(self):
-        etc_client = etcd.Client(host='192.168.1.2', port=2379)
+        etc_client = etcd.Client(host='etcd', port=2379)
         etc_result = etc_client.read('/project/spiderman/mysql')
         mysql_info = json.loads(etc_result.value)
         self.db = pymysql.connect(mysql_info['host'],mysql_info['user'],mysql_info['password'], mysql_info['database'], use_unicode=True, charset="utf8")

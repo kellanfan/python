@@ -21,11 +21,11 @@ logger = create_logger()
 
 def redis_client():
     try:
-        etc_client = etcd.Client(host='192.168.1.2', port=2379)
+        etc_client = etcd.Client(host='etcd', port=2379)
         etc_result = etc_client.read('/python/info/redis')
         redis_info = json.loads(etc_result.value)
     except Exception as e:
-        logger.error('Connect to Etcd server [192.168.1.2] failed: [{}]'.format(e))
+        logger.error('Connect to Etcd server failed: [{}]'.format(e))
         return None
         
 

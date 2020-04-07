@@ -131,7 +131,7 @@ def main(args):
         主函数，调度器
     '''
     try:
-        redis_pool = redis.ConnectionPool(host='192.168.1.2',port=6379)
+        redis_pool = redis.ConnectionPool(host='redis',port=6379)
         redis_conn = redis.Redis(connection_pool=redis_pool)
         pg_conn = Mypostgres()
     except:

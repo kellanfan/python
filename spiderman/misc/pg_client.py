@@ -21,7 +21,7 @@ logger = create_logger('pg_client')
 class Mypostgres(object):
     def __init__(self):
         try:
-            etc_client = etcd.Client(host='192.168.1.2', port=2379)
+            etc_client = etcd.Client(host='etcd', port=2379)
             etc_result = etc_client.read('/python/info/postgresql')
             self.postgresql_info = json.loads(etc_result.value)
         except Exception as e:
