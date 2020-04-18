@@ -13,7 +13,9 @@
 from lxml import etree
 from misc.openurl import OpenUrl
 from misc.pg_client import Mypostgres
+from log.create_logger import create_logger
 
+logger = create_logger()
 
 url = 'http://www.310win.com/shuangseqiu/tubiao_lshm.html'
 ourl = OpenUrl(url)
@@ -34,6 +36,6 @@ if code == 200:
                 sql = "insert into shuang_se_qiu(opendate, issue_num, r_number, b_number) values (%s,%s,%s,%s)"
                 ret = pg_conn.execute(sql,[opendate, issue_num, r_nunber,b_number])
                 if ret:
-                    print("insert [{}] ok..".format(issue_num))
+                    logger.info("insert [{}] ok..".format(issue_num))
                 else:
-                    print("insert [{0}] failed: [{1}]".format(issue_num, ret))
+                    logger.error("insert [{0}] failed: [{1}]".format(issue_num, ret))
