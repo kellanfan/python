@@ -62,7 +62,6 @@ class ZPspider(object):
 
             html = requests.post(url, headers=self.headers, data=datas, cookies=cookie, timeout=5)
             result = html.json()
-            print(result)
             if page == 1:
                 totalCount = result['content']['positionResult']['totalCount']
                 resultSize = result['content']['positionResult']['resultSize']
