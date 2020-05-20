@@ -3,52 +3,42 @@
 from PIL import Image
 import argparse
 
-#命令行输入参数处理
-parser = argparse.ArgumentParser()
+class ImageHandler(object):
+    def __init__(self, src_image, output='output.txt'):
+        im = Image.open(src_image)
+        self.__src_image = im.resize((int(im.width/10),int(im.height/10)), Image.NEAREST)
+        self.__ascii_char = list("$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ")
+        self.__output = output
+    def get_char(self,r,g,b,alpha = 256):
+        if alpha == 0:
+            return ' '
+        length = len(self.__ascii_char)
+        gray = int(0.2126 * r + 0.7152 * g + 0.0722 * b)
 
-parser.add_argument('file')     #输入文件
-parser.add_argument('-o', '--output')   #输出文件
-parser.add_argument('--width', type = int, default = 80) #输出字符画宽
-parser.add_argument('--height', type = int, default = 80) #输出字符画高
+        unit = (256.0 + 1)/length
+        return self.__ascii_char[int(gray/unit)]
 
-#获取参数
-args = parser.parse_args()
-
-IMG = args.file
-WIDTH = args.width
-HEIGHT = args.height
-OUTPUT = args.output
-
-ascii_char = list("$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ")
-
-# 将256灰度映射到70个字符上
-def get_char(r,g,b,alpha = 256):
-    if alpha == 0:
-        return ' '
-    length = len(ascii_char)
-    gray = int(0.2126 * r + 0.7152 * g + 0.0722 * b)
-
-    unit = (256.0 + 1)/length
-    return ascii_char[int(gray/unit)]
-
-if __name__ == '__main__':
-
-    im = Image.open(IMG)
-    im = im.resize((WIDTH,HEIGHT), Image.NEAREST)
-
-    txt = ""
-
-    for i in range(HEIGHT):
-        for j in range(WIDTH):
-            txt += get_char(*im.getpixel((j,i)))
-        txt += '\n'
-
-    print txt
-    
-    #字符画输出到文件
-    if OUTPUT:
-        with open(OUTPUT,'w') as f:
+    def output(self):
+        txt = ""
+        for i in range(self.__src_image.height):
+            for j in range(self.__src_image.width):
+                txt += self.get_char(*self.__src_image.getpixel((j,i)))
+            txt += '\n'
+        #字符画输出到文件
+        with open(self.__output,'w') as f:
             f.write(txt)
+
+def main(args):
+    if args.output:
+        im = ImageHandler(args.file, args.output)
     else:
-        with open("output.txt",'w') as f:
-            f.write(txt)
+        im = ImageHandler(args.file)
+    im.output()
+if __name__ == '__main__':
+    #命令行输入参数处理
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--file', help='图片文件', action="store", required=True)     #输入文件
+    parser.add_argument('-o', '--output', help='输出文件', action="store")   #输出文件
+
+    #获取参数
+    main(parser.parse_args())
