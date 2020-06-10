@@ -42,8 +42,8 @@ def getMovieInfo(url):
             info['public_time'] = selecter.xpath("//div[@class='co_content8']/ul/text()")[0].strip().split('：')[1]
             info['downlink'] = selecter.xpath("//tbody/tr/td/a/text()")[0]
             return info
-        except Exception as e:
-            raise e
+        except:
+            return None
     else:
         return html
 
