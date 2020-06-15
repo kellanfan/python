@@ -27,7 +27,8 @@ def get_downlink(url_part):
             name = selecter.xpath("//div[@class='info-title']/h1/text()")[0]
             links = selecter.xpath("//input[@name='down_url_list_0']/following-sibling::p/strong/a/@href")
             status = selecter.xpath('//div[@class="o_r_contact"]/ul/li[1]/font[1]/text()')[0]
-        except:
+        except Exception as e:
+            print(e)
             return 'null','null','null'
         else:
             str_down = '#'.join(links)
