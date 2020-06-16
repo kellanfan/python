@@ -12,45 +12,42 @@
 # here put the import lib
 import pymongo
 import time
-from lxml import etree
+from bs4 import BeautifulSoup 
 from misc.openurl import OpenUrl
 from log.create_logger import create_logger
-#logger = create_logger()
 
+logger = create_logger()
 base_url = 'http://wufazhuce.com/article/'
 
-title_reg = '//h2[@class="articulo-titulo"]/text()'
-autor_reg = '//p[@class="articulo-autor"]/text()'
-content_reg = '//div[@class="articulo-contenido"]/child::text()'
-
-mongo_client = pymongo.MongoClient("mongodb://192.168.1.2:27017/")
+mongo_client = pymongo.MongoClient("mongodb://mongodb:27017/")
 db = mongo_client["spider"]
 coll = db["one"]
+cur_last_id = list(coll.find().sort('article_id'))[-1]['article_id']
 
-for num in range(275,5000):
-    ourl = OpenUrl(base_url + str(num))
-    code,doc = ourl.run()
+fail_time = 0
+
+while True:
+    cur_last_id += 1
     data = {}
+    ourl = OpenUrl(base_url + str(cur_last_id))
+    code,doc = ourl.run()
     if code == 200:
-        selecter = etree.HTML(doc)
-        title = selecter.xpath(title_reg)[0]
-        autor = selecter.xpath(autor_reg)[0]
-        content = '\n'.join(selecter.xpath(content_reg))
-        if content.strip():
-            data["content"] = content.strip()
-        else:
-            print("[{}] has no content".format(title.strip()))
-            continue
-        data['article_id'] = num
-        data["title"] = title.strip()
-        data["autor"] = autor.strip()
+        soup = BeautifulSoup(doc, 'lxml')
+        data['article_id'] = cur_last_id
+        data["title"] = soup.find('h2',class_='articulo-titulo').text.strip()
+        data["autor"] = soup.find('p',class_='articulo-autor').text.strip()
+        data["content"] = soup.find('div',class_='articulo-contenido').text.strip()
         
         try:
             coll.insert_one(data)
-            print("insert [{}] successful".format(title.strip()))
+            logger.info("insert [{}] successful".format(data["title"]))
         except Exception as e:
-            print("insert [{0}] failed: [{1}]".format(title.strip(),e))
+            logger.error("insert [{0}] failed: [{1}]".format(data["title"],e))
             continue
         time.sleep(1)
     else:
-        print("Get [{}] failed".format(num))
+        fail_time += 1
+        logger.error("Get [{}] failed".format(cur_last_id))
+        if fail_time > 20:
+            logger.critical("Too many Fail times, break!")
+            break
