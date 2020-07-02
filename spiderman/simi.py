@@ -17,7 +17,7 @@ import redis
 from lxml import etree
 from misc.openurl import OpenUrl
 from log.create_logger import create_logger
-
+from tomorrow import threads
 logger = create_logger()
 
 def get_pages(start_url):
@@ -51,25 +51,24 @@ def get_useful_url(start_url,redis_conn):
         else:
             logger.error('get [{0}] failed: [{1}]'.format(url, code))
 
-def get_img(redis_conn):
-    start_url = 'https://se.haodd92.com/'
-    for url in redis_conn.sort('simi',alpha=True):
-        ourl = OpenUrl(start_url + url.decode('utf-8'))
-        code, html = ourl.run()
-        if code == 200:
-            selecter = etree.HTML(html)
-            img_url_list = selecter.xpath('//div[@class="center margintop border clear main"]/img/@src')
-            for img_url in img_url_list:
-                time.sleep(0.5)
-                img_name = img_url.split('/')[-1]
-                local = 'image/{}'.format(img_name)
-                try:
-                    r = requests.get(img_url, stream=True)
-                    with open(local, 'wb') as f:
-                        f.write(r.content)
-                    logger.info('download [{0}] to [{1}] successfully'.format(img_url,img_name))
-                except Exception as e:
-                    logger.error('download [{0}] to [{1}] failed: [{2}]'.format(img_url,img_name,e))
+@threads(5)
+def get_img(redis_conn, url):
+    ourl = OpenUrl('https://se.haodd92.com/' + url.decode('utf-8'))
+    code, html = ourl.run()
+    if code == 200:
+        selecter = etree.HTML(html)
+        img_url_list = selecter.xpath('//div[@class="center margintop border clear main"]/img/@src')
+        for img_url in img_url_list:
+            time.sleep(0.5)
+            img_name = img_url.split('/')[-1]
+            local = 'image/{}'.format(img_name)
+            try:
+                r = requests.get(img_url, stream=True)
+                with open(local, 'wb') as f:
+                    f.write(r.content)
+                logger.info('download [{0}] to [{1}] successfully'.format(img_url,img_name))
+            except Exception as e:
+                logger.error('download [{0}] to [{1}] failed: [{2}]'.format(img_url,img_name,e))
 
 def main():
     start_url = 'https://se.haodd92.com/listhtml/7'
@@ -84,7 +83,8 @@ def main():
         redis_conn = None
         logger.error('Connect to redis failed: [{}]'.format(e))
     get_useful_url(start_url,redis_conn)
-    get_img(redis_conn)
+    for url in redis_conn.sort('simi',alpha=True):
+        get_img(redis_conn, url)
 
 if __name__ == "__main__":
     main()

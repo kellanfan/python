@@ -23,7 +23,7 @@ class Spider(object):
         self.python_version = sys.version_info[0]
     def _get_content(self,url):
         ourl = OpenUrl(url)
-        code, content = ourl.openurl()
+        code, content = ourl.run()
         if code == 200:
             return content
         else:
@@ -35,7 +35,7 @@ class Spider(object):
             f.write(content + '\n')
             
     def _get_data(self, content):
-        soup = BeautifulSoup(content)
+        soup = BeautifulSoup(content, 'lxml')
         for short in soup.find_all('span',class_="short"):
             soup1 = BeautifulSoup(str(short))
             short_comment = soup1.span.string
