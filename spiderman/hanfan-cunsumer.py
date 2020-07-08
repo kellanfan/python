@@ -17,8 +17,9 @@ import sys
 from misc.openurl import OpenUrl
 from lxml import etree
 from misc import pg_client
+from misc.mq_receiver import ReceiverClient
 
-def send_pg(para):
+def send_pg(pg_connect,para):
     sql = "insert into hanfan(name,url,panpass) values (%s,%s,%s)"
     ret = pg_connect.execute(sql, para)
     if ret:
@@ -26,8 +27,7 @@ def send_pg(para):
     else:
         print('insert [{0}] failed: [{1}]'.format(para, ret))
 
-def callback(ch, method, properties, body):  # 四个参数为标准格式
-    # 管道内存对象  内容相关信息  后面讲
+def diy(body,pg_connect):
     cloudpan_url = 'null'
     cloudpan_pass = 'null'
     msg = eval(body)
@@ -50,21 +50,13 @@ def callback(ch, method, properties, body):  # 四个参数为标准格式
                 cloudpan_pass = cloudpan_pass[0]
         except:
             pass
-        send_pg([fkey, cloudpan_url, cloudpan_pass])
+        send_pg(pg_connect,[fkey, cloudpan_url, cloudpan_pass])
     else:
         pass
     time.sleep(0.5)
-    ch.basic_ack(delivery_tag = method.delivery_tag)  # 告诉生成者，消息处理完成
-pg_connect = pg_client.Mypostgres()
-connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.1.252'))
-channel = connection.channel()
-channel.queue_declare(queue='hanfan', durable=True, arguments={'x-max-length':20000})
-channel.basic_consume(  # 消费消息
-        'hanfan',  # 你要从那个队列里收消息
-        callback,  # 如果收到消息，就调用callback函数来处理消息
-        # no_ack=True  # 写的话，如果接收消息，机器宕机消息就丢了
-        # 一般不写。宕机则生产者检测到发给其他消费者
-        )
 
-print(' [*] Waiting for messages. To exit press CTRL+C')
-channel.start_consuming()
+def main():
+    pg_connect = pg_client.Mypostgres()
+    receiver = ReceiverClient('admin','Zhu88jie')
+    receiver.diy = diy
+    receiver.run()

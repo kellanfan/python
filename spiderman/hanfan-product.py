@@ -15,9 +15,9 @@ import time
 import pika
 from lxml import etree
 from misc.openurl import OpenUrl
+from misc.mq_sender import SenderClient
 
-
-def get_url(ftype,channel):
+def get_url(ftype,sender):
     main_url = 'https://www.hanfan.cc/'
     ourl = OpenUrl(main_url + ftype)
     code,main_content = ourl.run()
@@ -37,17 +37,16 @@ def get_url(ftype,channel):
             for link in selecter_list:
                 name = link.text
                 sub_url = link.attrib['href'] + '#prettyPhoto/0/'
-
-                channel.basic_publish(exchange='',
-                    routing_key='hanfan',
-                    body=str({name:sub_url}),
-                    properties=pika.BasicProperties(
-                    delivery_mode=2,
-                    ))
+                sender.send_date(str({name:sub_url}))
+                
         else:
             continue
         time.sleep(1)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.1.252'))
-channel = connection.channel()
-channel.queue_declare(queue='hanfan', durable=True)  
+def main():
+    sender = SenderClient('admin','Zhu88jie')
+    for ftype in ['variety', 'hanju', 'movie']:
+        get_url(ftype,sender)
+
+if __name__ == "__main__":
+    main()
