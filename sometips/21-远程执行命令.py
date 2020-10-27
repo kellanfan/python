@@ -54,7 +54,7 @@ class RemoteCmd(object):
             print("ERROR: Connect to [{0}] Failed: [{1}]".format(self.hostname, e))
         else:
             print("Execing [{0}] with [{1}] ...".format(self.hostname, cmd))
-            stdin, stdout, stderr = client.exec_command(cmd)
+            _, stdout, stderr = client.exec_command(cmd)
             result = stdout.read().decode('utf-8')
             error = stderr.read().decode('utf-8')
             if error.strip():
