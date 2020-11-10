@@ -6,7 +6,9 @@
 @Author  :   Kellan Fan 
 @Version :   1.0
 @Contact :   kellanfan1989@gmail.com
-@Desc    :   None
+@Desc    :   目前harbor2.0以上的版本由于在请求头中添加了X-Harbor-CSRF-Token所以session一直
+             获取不到，因此暂时无法支持。
+             
 '''
 
 # here put the import lib
