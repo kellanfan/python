@@ -101,9 +101,9 @@ class HarborAPI(object):
 
     def delete_project(self, project_name):
         ret = self.project_info(project_name)
-        if ret is not None:
+        try:
             project_id = ret[0].get('project_id')
-        else:
+        except:
             print('ERROR: Can not find project [{}]'.format(project_name))
             return None
 
