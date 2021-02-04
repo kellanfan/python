@@ -6,6 +6,7 @@
 
 #doc
 *.json
+*.yaml
 *.txt
 #*.yaml
 *.log
