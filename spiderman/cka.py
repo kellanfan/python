@@ -72,6 +72,8 @@ def main():
             print('send mail successful')
         else:
             print('send mail failed')
+    else:
+        print('The price not changed')
 
 if __name__ == '__main__':
     main()
