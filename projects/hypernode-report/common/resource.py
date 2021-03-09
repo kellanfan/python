@@ -42,8 +42,8 @@ class HyperData(object):
             self.__disk_reserve_rate = 0.2
 
     def cal_data(self):
-        real_cpu = 0; real_mem = 0; real_disk = 0
-        vcpu = 0; vmem = 0; vdisk = 0; 
+        real_cpu = 0; real_mem = 0; real_disk = 0; real_used_disk = 0; real_used_mem = 0
+        vcpu = 0; vmem = 0; vdisk = 0
         used_vcpu = 0; used_vmem = 0; used_vdisk = 0
         per_cpu = 0; per_mem = 0 ; per_disk = 0
         for hypernode in self.__content:
@@ -58,6 +58,8 @@ class HyperData(object):
                 self.__hyper_list.append(host_machine)
                 real_cpu += hypernode['total_vcpu']/self.__cpu_oversale_rate
                 real_mem += hypernode['real_total_memory']
+                real_used_mem += hypernode['real_used_memory']
+                real_used_disk += hypernode['used_disk']
                 real_disk += hypernode['used_disk'] + hypernode['free_disk']
                 vcpu += hypernode['total_vcpu']
                 vmem += hypernode['total_memory']
@@ -67,15 +69,18 @@ class HyperData(object):
                 used_vdisk += hypernode['virtual_disk']
                 per_cpu += (100 - hypernode['cpu_idle'])
                 per_mem += (1 - float(hypernode['real_free_memory'])/ float(hypernode['real_total_memory']))*100
-                per_disk += (float(hypernode['used_disk']) / float(real_disk))*100
-
+                
         result = []
         lenth = len(self.__hyper_list)
         if not all([vcpu,vmem,vdisk]):
             return (0,result)
         else:
+            per_mem = (float(real_used_mem)/float(real_mem))*100
             real_mem = int(real_mem/1024)
+            per_disk = (float(real_used_disk)/float(real_disk))*100
             real_disk = int(real_disk/1024/1024)
+            per_cpu = float(per_cpu) / float(lenth)
+            
             vmem = int(vmem/1024)
             vdisk = int(vdisk/self.__disk_reserve_rate/1024/1024)
             used_vmem = int(used_vmem/1024)
@@ -83,9 +88,6 @@ class HyperData(object):
             free_vcpu = vcpu - used_vcpu
             free_vmem = vmem - used_vmem
             free_vdisk = vdisk - used_vdisk
-            per_cpu = float(per_cpu) / float(lenth)
-            per_mem = float(per_mem) / float(lenth)
-            per_disk = float(per_disk) / float(lenth)
             per_vcpu = (float(used_vcpu)/float(vcpu))*100
             per_vmem = (float(used_vmem)/float(vmem))*100
             per_vdisk = (float(used_vdisk)/float(vdisk))*100
